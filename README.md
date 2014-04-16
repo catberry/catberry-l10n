@@ -93,11 +93,11 @@ localization.registerOnClient(cat.locator);
 And then you can just inject $localizationProvider into you module and use like this:
 
 ```javascript
-function Module ($localizationProvider) {
+function Module($localizationProvider) {
 	this._localization = $localizationProvider;
 }
 
-Module.prototype.render (placeholderName, args, callback) {
+Module.prototype.render(placeholderName, args, callback) {
 	// user always has locale in cookies
 	var locale = args.$$.$cookies.get('locale').value,
 		localizedValue = this._localization(locale, 'LOCALIZATION_KEY');
