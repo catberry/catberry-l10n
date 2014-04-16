@@ -30,8 +30,43 @@
 
 'use strict';
 
+var LocalizationProvider = require('./lib/LocalizationProvider'),
+	ServerLocalizationLoader = require('./lib/server/LocalizationLoader'),
+	ClientLocalizationLoader = require('./lib/client/LocalizationLoader');
+
 module.exports = {
-	LocalizationProvider: require('./lib/LocalizationProvider'),
-	ServerLocalizationLoader: require('./lib/server/LocalizationLoader'),
-	ClientLocalizationLoader: require('./lib/client/LocalizationLoader')
+	/**
+	 * Constructor of localization provider.
+	 */
+	LocalizationProvider: LocalizationProvider,
+	/**
+	 * Constructor of server-side localization loader.
+	 */
+	ServerLocalizationLoader: ServerLocalizationLoader,
+	/**
+	 * Constructor of client-side localization loader.
+	 */
+	ClientLocalizationLoader: ClientLocalizationLoader,
+	/**
+	 * Registers all localization components in server-side service locator.
+	 * @param {ServiceLocator} locator Catberry's service locator.
+	 */
+	registerOnServer: function (locator) {
+		var config = locator.resolve('config');
+		locator.register('localizationProvider',
+			LocalizationProvider, config, true);
+		locator.register('localizationLoader',
+			ServerLocalizationLoader, config, true);
+	},
+	/**
+	 * Registers all localization components in client-side service locator.
+	 * @param {ServiceLocator} locator Catberry's service locator.
+	 */
+	registerOnClient: function (locator) {
+		var config = locator.resolve('config');
+		locator.register('localizationProvider',
+			LocalizationProvider, config, true);
+		locator.register('localizationLoader',
+			ClientLocalizationLoader, config, true);
+	}
 };
