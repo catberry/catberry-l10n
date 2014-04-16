@@ -157,6 +157,33 @@ describe('server/LocalizationLoader', function () {
 					'Localization do not match'
 				);
 			});
+
+		it('should return localization merged with modules localization',
+			function () {
+				var locator = createLocator(),
+					config = Object.create(defaultConfig);
+				config.modulesFolder = path.join(__dirname, '..', '..', 'cases',
+					'lib', 'server', 'LocalizationLoader', 'modules');
+				var loader = locator.resolveInstance(LocalizationLoader,
+						config),
+					localization = loader.load('en-us');
+
+				var expectedLocalization = {
+					FIRST_VALUE: 'en-us locale first by module1',
+					SECOND_VALUE: 'en-us locale second',
+					THIRD_VALUE: 'ru locale third',
+					FOURTH_VALUE: 'en-us locale fourth by module2',
+					FIFTH_VALUE: 'en-us locale fifth',
+					SIXTH_VALUE: 'en-us locale sixth by module1',
+					SEVENTH_VALUE: 'en-us locale seventh by module2',
+					EIGHTH_VALUE: 'en-us locale eighth by module2'
+				};
+				assert.deepEqual(localization, expectedLocalization,
+					'Localization do not match'
+				);
+			}
+		);
+
 		it('should return same localization on short or full name',
 			function () {
 				var locator = createLocator(),
