@@ -36,22 +36,17 @@ var LocalizationProvider = require('./lib/LocalizationProvider'),
 
 module.exports = {
 	/**
-	 * Constructor of localization provider.
-	 */
-	LocalizationProvider: LocalizationProvider,
-	/**
-	 * Constructor of server-side localization loader.
-	 */
-	ServerLocalizationLoader: ServerLocalizationLoader,
-	/**
-	 * Constructor of client-side localization loader.
-	 */
-	ClientLocalizationLoader: ClientLocalizationLoader,
-	/**
 	 * Registers all localization components in server-side service locator.
 	 * @param {ServiceLocator} locator Catberry's service locator.
 	 */
 	registerOnServer: function (locator) {
+
+		// WARNING!!!
+		// we must do that at server TO NOT include this module into
+		// client-bundle
+		locator.registerInstance('serverModulePath',
+			'./lib/server/LocalizationLoader');
+
 		var config = locator.resolve('config');
 		locator.register('localizationProvider',
 			LocalizationProvider, config, true);
