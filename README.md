@@ -57,17 +57,13 @@ In server.js
 
 ```javascript
 var localization = require('catberry-localization'),
-	LocalizationProvider = localization.LocalizationProvider,
-	// used server implementation
-	LocalizationLoader = localization.ServerLocalizationLoader,
 	catberry = require('catberry'),
 	config = require('./config-server'),
 	app = connect();
 	cat = catberry.create(config);
 
 // register localization components as singletons
-cat.locator.register('localizationProvider', LocalizationProvider, config, true);
-cat.locator.register('localizationLoader', LocalizationLoader, config, true);
+localization.registerOnServer(cat.locator);
 
 // then resolve loader to get middleware
 var localizationLoader = cat.locator.resolve('localizationLoader');
@@ -85,16 +81,13 @@ In client.js
 
 ```javascript
 var localization = require('catberry-localization'),
-	LocalizationProvider = localization.LocalizationProvider,
-	// used client implementation
-	LocalizationLoader = localization.ClientLocalizationLoader,
 	catberry = require('catberry'),
 	config = require('./config-client'),
-	app = catberry.create(config);
+	cat = catberry.create(config);
 
-// only register localization components
-app.locator.register('localizationProvider', LocalizationProvider, config, true);
-app.locator.register('localizationLoader', LocalizationLoader, config, true);
+// register localization components in locator
+localization.registerOnClient(cat.locator);
+
 ```
 
 And then you can just inject $localizationProvider into you module and use like this:
