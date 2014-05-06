@@ -1,0 +1,6 @@
+{
+	"TEST_VALUE": ["ru form1", "ru form2", "ru form3"],
+	"TEST_VALUE2": ["ru form1"],
+	"TEST_VALUE3": "ru form1",
+	"TEST_VALUE_ONLY_RU": ["ru-only form1", "ru-only form2", "ru-only form3"]
+}
