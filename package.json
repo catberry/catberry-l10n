@@ -1,20 +1,20 @@
 {
-	"name": "catberry-localization",
-	"version": "0.4.1",
+	"name": "catberry-l10n",
+	"version": "0.6.0",
 	"author": "Denis Rechkunov <denis.rechkunov@gmail.com>",
 	"description": "Localization module for catberry framework",
 	"homepage": "https://github.com/pragmadash/catberry-localization",
 	"keywords": [
-		"catberry", "localization", "language", "middleware", "connect",
-		"module", "express"
+		"catberry", "localization", "l10n", "pluralization", "plural",
+		"language", "middleware", "connect", "module", "express"
 	],
 	"bugs": {
-		"url": "https://github.com/pragmadash/catberry-localization/issues",
+		"url": "https://github.com/pragmadash/catberry-l10n/issues",
 		"email": "denis.rechkunov@gmail.com"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git://github.com/pragmadash/catberry-localization.git"
+		"url": "git://github.com/pragmadash/catberry-l10n.git"
 	},
 	"main": "./index.js",
 	"devDependencies": {
@@ -35,7 +35,7 @@
 	"licenses": [
 		{
 			"type": "MIT",
-			"url": "https://github.com/pragmadash/catberry-localization/blob/master/LICENSE"
+			"url": "https://github.com/pragmadash/catberry-l10n/blob/master/LICENSE"
 		}
 	]
 }
