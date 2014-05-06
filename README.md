@@ -132,7 +132,7 @@ Module.prototype.render(placeholderName, args, callback) {
 	// for example we have GET parameter "apples"
 		appleCount = Number(args.apples);
 		localizedValue = util.format(
-			this._l10n.pluralize(locale, 'APPLE'),
+			this._l10n.pluralize(locale, 'APPLE', appleCount),
 			appleCount);
 
 	// if appleCount is 1 then localizedValue will be "1 apple"
