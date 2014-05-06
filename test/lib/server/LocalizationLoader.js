@@ -39,18 +39,30 @@ var assert = require('assert'),
 
 var defaultLocale = 'ru',
 	defaultConfig = {
-		localization: {
+		l10n: {
 			defaultLocale: defaultLocale,
 			path: path.join(__dirname, '..', '..', 'cases',
 				'lib', 'server', 'LocalizationLoader')
 		}
 	},
 	localizations = {
-		en: require(path.join(defaultConfig.localization.path, 'en')),
-		ru: require(path.join(defaultConfig.localization.path, 'ru')),
-		'en-us': require(path.join(defaultConfig.localization.path, 'en-us'))
+		en: require(path.join(defaultConfig.l10n.path, 'en')),
+		ru: require(path.join(defaultConfig.l10n.path, 'ru')),
+		'en-us': require(path.join(defaultConfig.l10n.path, 'en-us'))
 	},
 	defaultLocalization = localizations[defaultLocale];
+
+localizations['en-us'].$pluralization = localizations.en.$pluralization = {
+	rule: '(n != 1)',
+	defaultRule: '(n%10==1 && n%100!=11 ? 0 : ' +
+		'n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)',
+	fromDefaultLocale: {}
+};
+
+localizations.ru.$pluralization = {
+	rule: '(n%10==1 && n%100!=11 ? 0 : ' +
+		'n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)'
+};
 
 describe('server/LocalizationLoader', function () {
 	describe('#constructor', function () {
@@ -67,7 +79,7 @@ describe('server/LocalizationLoader', function () {
 				assert.throws(function () {
 					var locator = createLocator();
 					locator.resolveInstance(LocalizationLoader, {
-						localization: {
+						l10n: {
 							defaultLocale: 'ch'
 						}
 					});
@@ -176,8 +188,10 @@ describe('server/LocalizationLoader', function () {
 					FIFTH_VALUE: 'en-us locale fifth',
 					SIXTH_VALUE: 'en-us locale sixth by module1',
 					SEVENTH_VALUE: 'en-us locale seventh by module2',
-					EIGHTH_VALUE: 'en-us locale eighth by module2'
+					EIGHTH_VALUE: 'en-us locale eighth by module2',
+					$pluralization: localizations['en-us'].$pluralization
 				};
+
 				assert.deepEqual(localization, expectedLocalization,
 					'Localization do not match'
 				);
@@ -331,7 +345,7 @@ describe('server/LocalizationLoader', function () {
 					var request = http.request({
 							port: 8084,
 							agent: false,
-							path: '/localization.js',
+							path: '/l10n.js',
 							headers: {
 								Cookie: 'locale=en-us'
 							}
@@ -352,9 +366,9 @@ describe('server/LocalizationLoader', function () {
 								enUsLocalization.FOURTH_VALUE;
 							mergedLocalization.FIFTH_VALUE =
 								enUsLocalization.FIFTH_VALUE;
+							mergedLocalization.$pluralization =
+								localizations['en-us'].$pluralization;
 
-							var expected = 'window.localization = ' +
-								JSON.stringify(mergedLocalization) + ';';
 							var data = '';
 
 							response.setEncoding('utf8');
@@ -362,8 +376,13 @@ describe('server/LocalizationLoader', function () {
 								data += chunk;
 							});
 							response.on('end', function () {
-								assert.strictEqual(data, expected,
-									'Wrong file received');
+								var window = {};
+								/*jshint evil:true */
+								eval(data);
+								assert.deepEqual(
+									window.localization, mergedLocalization,
+									'Localization do not match'
+								);
 								server.close(function () {
 									done();
 								});
