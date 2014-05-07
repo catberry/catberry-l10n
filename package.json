@@ -1,6 +1,6 @@
 {
 	"name": "catberry-l10n",
-	"version": "0.6.2",
+	"version": "0.6.3",
 	"author": "Denis Rechkunov <denis.rechkunov@gmail.com>",
 	"description": "Localization module for catberry framework",
 	"homepage": "https://github.com/pragmadash/catberry-localization",
