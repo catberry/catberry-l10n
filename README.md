@@ -99,7 +99,7 @@ function Module($localizationProvider) {
 
 Module.prototype.render(placeholderName, args, callback) {
 	// user always has locale in cookies
-	var locale = args.$$.$cookies.get('locale').value,
+	var locale = args.$$.$cookies.get('locale'),
 		localizedValue = this._l10n.get(locale, 'LOCALIZATION_KEY');
 	...
 }
@@ -128,7 +128,7 @@ function Module($localizationProvider) {
 
 Module.prototype.render(placeholderName, args, callback) {
 	// user always has locale in cookies
-	var locale = args.$$.$cookies.get('locale').value,
+	var locale = args.$$.$cookies.get('locale'),
 	// for example we have GET parameter "apples"
 		appleCount = Number(args.apples);
 		localizedValue = util.format(
