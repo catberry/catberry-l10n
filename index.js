@@ -31,6 +31,7 @@
 'use strict';
 
 var LocalizationProvider = require('./lib/LocalizationProvider'),
+	/**no-client-bundle**/
 	ServerLocalizationLoader = require('./lib/server/LocalizationLoader'),
 	ClientLocalizationLoader = require('./lib/client/LocalizationLoader');
 
@@ -40,13 +41,6 @@ module.exports = {
 	 * @param {ServiceLocator} locator Catberry's service locator.
 	 */
 	registerOnServer: function (locator) {
-
-		// WARNING!!!
-		// we must do that at server TO NOT include this module into
-		// client-bundle
-		locator.registerInstance('serverModulePath',
-			'./lib/server/LocalizationLoader');
-
 		var config = locator.resolve('config');
 		locator.register('localizationProvider',
 			LocalizationProvider, config, true);
