@@ -2,8 +2,7 @@
 [![NPM](https://nodei.co/npm/catberry-l10n.png)](https://nodei.co/npm/catberry-l10n/)
 
 ##Description
-This module adds localization support for all [Catberry]
-(https://github.com/catberry/catberry) modules.
+This module adds localization support for all [Catberry](https://github.com/catberry/catberry) modules.
 
 It supports two contexts of localization:
  1. Application-based localization - files like en.json, en-us.json, 
@@ -120,8 +119,7 @@ Module.prototype.render(placeholderName, callback) {
 Also you must include `/l10n.js` script into your root placeholder.
 
 ##Pluralization
-Pluralization support was implemented using this [rules]
-(https://github.com/translate/l10n-guide/blob/master/docs/l10n/pluralforms.rst).
+Pluralization support was implemented using this [rules](https://github.com/translate/l10n-guide/blob/master/docs/l10n/pluralforms.rst).
 To pluralize localized value it must be set as array with all required plural 
 forms for locale language.
 
@@ -156,16 +154,14 @@ Module.prototype.render(placeholderName, callback) {
 ```
 
 ##Contribution
-If you have found a bug, please create pull request with [mocha]
-(https://www.npmjs.org/package/mocha) unit-test which reproduces it or describe 
-all details in issue if you can not implement test. If you want to propose some 
-improvements just create issue or pull request but please do not forget to use 
-`npm test` to be sure that your code is awesome.
+If you have found a bug, please create pull request with [mocha](https://www.npmjs.org/package/mocha) 
+unit-test which reproduces it or describe all details in issue if you can not 
+implement test. If you want to propose some improvements just create issue or 
+pull request but please do not forget to use `npm test` to be sure that your 
+code is awesome.
 
-All changes should satisfy this [Code Style Guide]
-(https://github.com/catberry/catberry/blob/master/docs/code-style-guide.md).
+All changes should satisfy this [Code Style Guide](https://github.com/catberry/catberry/blob/master/docs/code-style-guide.md).
 
-Also your changes should be covered by unit tests using [mocha]
-(https://www.npmjs.org/package/mocha).
+Also your changes should be covered by unit tests using [mocha](https://www.npmjs.org/package/mocha).
 
 Denis Rechkunov <denis.rechkunov@gmail.com>
