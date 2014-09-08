@@ -31,31 +31,20 @@
 'use strict';
 
 var LocalizationProvider = require('./lib/LocalizationProvider'),
-	/**no-client-bundle**/
-	ServerLocalizationLoader = require('./lib/server/LocalizationLoader'),
-	ClientLocalizationLoader = require('./lib/client/LocalizationLoader');
+	LocalizationLoader = require('./browser/LocalizationLoader');
 
 module.exports = {
 	/**
-	 * Registers all localization components in server-side service locator.
+	 * Registers all localization components in service locator.
 	 * @param {ServiceLocator} locator Catberry's service locator.
 	 */
-	registerOnServer: function (locator) {
+	register: function (locator) {
 		var config = locator.resolve('config');
 		locator.register('localizationProvider',
 			LocalizationProvider, config, true);
 		locator.register('localizationLoader',
-			ServerLocalizationLoader, config, true);
+			LocalizationLoader, config, true);
 	},
-	/**
-	 * Registers all localization components in client-side service locator.
-	 * @param {ServiceLocator} locator Catberry's service locator.
-	 */
-	registerOnClient: function (locator) {
-		var config = locator.resolve('config');
-		locator.register('localizationProvider',
-			LocalizationProvider, config, true);
-		locator.register('localizationLoader',
-			ClientLocalizationLoader, config, true);
-	}
+	LocalizationProvider: LocalizationProvider,
+	LocalizationLoader: LocalizationLoader
 };

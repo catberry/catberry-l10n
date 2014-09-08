@@ -23,6 +23,9 @@
 		"jscs": "~1.3.0",
 		"jshint": "^2.5.0"
 	},
+	"browser": {
+		"./lib/LocalizationLoader.js": "./browser/LocalizationLoader.js"
+	},
 
 	"engines": {
 		"node": "~0.10.26"
