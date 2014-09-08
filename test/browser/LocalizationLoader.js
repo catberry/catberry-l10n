@@ -31,7 +31,7 @@
 'use strict';
 
 var assert = require('assert'),
-	LocalizationLoader = require('../../../lib/client/LocalizationLoader'),
+	LocalizationLoader = require('../../browser/LocalizationLoader'),
 	ServiceLocator = require('catberry-locator');
 
 describe('client/LocalizationLoader', function () {
