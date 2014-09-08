@@ -31,7 +31,8 @@
 'use strict';
 
 var LocalizationProvider = require('./lib/LocalizationProvider'),
-	LocalizationLoader = require('./browser/LocalizationLoader');
+	LocalizationHelper = require('./lib/LocalizationHelper'),
+	LocalizationLoader = require('./lib/LocalizationLoader');
 
 module.exports = {
 	/**
@@ -39,11 +40,15 @@ module.exports = {
 	 * @param {ServiceLocator} locator Catberry's service locator.
 	 */
 	register: function (locator) {
-		var config = locator.resolve('config');
+		var config = locator.resolve('config'),
+			dust = locator.resolve('dust');
 		locator.register('localizationProvider',
 			LocalizationProvider, config, true);
 		locator.register('localizationLoader',
 			LocalizationLoader, config, true);
+
+		var helper = locator.resolveInstance(LocalizationHelper, config);
+		dust.helpers.l10n = helper.getDustHelper();
 	},
 	LocalizationProvider: LocalizationProvider,
 	LocalizationLoader: LocalizationLoader
