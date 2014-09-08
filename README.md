@@ -1,4 +1,4 @@
-#Localization plugin for Catberry Framework[![Build Status](https://travis-ci.org/catberry/catberry-l10n.png?branch=master)](https://travis-ci.org/catberry/catberry-l10n)
+#Localization plugin for Catberry Framework [![Build Status](https://travis-ci.org/catberry/catberry-l10n.png?branch=master)](https://travis-ci.org/catberry/catberry-l10n)
 [![NPM](https://nodei.co/npm/catberry-l10n.png)](https://nodei.co/npm/catberry-l10n/)
 
 ##Description
@@ -73,7 +73,7 @@ var l10n = require('catberry-l10n'),
 	cat = catberry.create(config);
 
 // register localization components as singletons
-l10n.registerOnServer(cat.locator);
+l10n.register(cat.locator);
 
 // then resolve loader to get middleware
 var localizationLoader = cat.locator.resolve('localizationLoader');
@@ -87,7 +87,7 @@ app.use(cat.getMiddleware());
 ...
 ```
 
-In `client.js`
+In `browser.js`
 
 ```javascript
 var l10n = require('catberry-l10n'),
@@ -96,62 +96,101 @@ var l10n = require('catberry-l10n'),
 	cat = catberry.create(config);
 
 // register localization components in locator
-l10n.registerOnClient(cat.locator);
+l10n.register(cat.locator);
 
 ```
 
-And then you can just inject $localizationProvider into you module and use 
-like this:
+As may notice `catberry-l10n` has server-side middleware that automatically sets
+browser locale to user cookie and you can use it from `$context.cookies.get` in
+your modules.
 
-```javascript
-function Module($localizationProvider) {
-	this._l10n = $localizationProvider;
-}
-
-Module.prototype.render(placeholderName, callback) {
-	// user always has locale in cookies
-	var locale = this.$context.cookies.get('locale'),
-		localizedValue = this._l10n.get(locale, 'LOCALIZATION_KEY');
-	...
-}
-```
-
-Also you must include `/l10n.js` script into your root placeholder.
+Also you should include `/l10n.js` script into your root placeholder. This URL is
+served by `catberry-l10n` middleware too.
 
 ##Pluralization
 Pluralization support was implemented using this [rules](https://github.com/translate/l10n-guide/blob/master/docs/l10n/pluralforms.rst).
 To pluralize localized value it must be set as array with all required plural 
 forms for locale language.
 
-Example for english
-```javascript
+##Dust helper
+You can use dustjs helper that puts localized value anywhere you want:
+
+```html
+{@l10n key="SOME_LOCALIZATION_KEY" locale="en-us" count=5 /}
+```
+
+* `key` - localization key
+* `locale` - current user localization (optional)
+* `count` - pluralization count (optional)
+
+Let's say we have such localization dictionary:
+
+```json
 {
+	"COMMENT": ["comment", "comments"]
+}
+```
+
+And we use such helper parameters:
+
+```html
+{@l10n key="COMMENT" locale="en-us" count=1 /}
+```
+It outputs `comment` word.
+
+```html
+{@l10n key="COMMENT" locale="en-us" count=5 /}
+```
+It outputs `comments` word.
+
+More about pluralization you can find next in this readme.
+
+Also if you have `locale` value in template data context it is not needed to 
+specify parameter `locale` in helper because it will be automatically used from
+data context.
+
+##Directly in code
+If you need to use localization with some complex logic you can access to
+localization provider and use it directly:
+
+Localization dictionary:
+
+```json
+{
+	"EAT": "eat",
 	"APPLE": ["%d apple", "%d apples"]
 }
 ```
 
-Usage
-```javascript
-var util = require('util');
+Module code:
 
+```javascript
 function Module($localizationProvider) {
 	this._l10n = $localizationProvider;
 }
 
-Module.prototype.render(placeholderName, callback) {
-	// user always has locale in cookies
+Module.prototype.renderSomePlaceholder() {
+	// user always has locale in cookies (thanks to l10n middleware)
 	var locale = this.$context.cookies.get('locale'),
-	// for example we have parameter "apples" for our module
 		appleCount = Number(this.$context.state.apples);
-		localizedValue = util.format(
+	return {
+		localizedEat: this._l10n.get(locale, 'EAT'),
+		localizedApple: util.format(
 			this._l10n.pluralize(locale, 'APPLE', appleCount),
-			appleCount);
-
-	// if appleCount is 1 then localizedValue will be "1 apple"
-	// if appleCount is 5 then localizedValue will be "5 apples"
-	...
+			appleCount
+		)
+	};
 }
 ```
+
+Placeholder template:
+
+```html
+{localizedEat} {localizedApple}
+```
+
+For 1 apple it will be `eat 1 apple`
+For 5 apples it will be `eat 5 apples`
 
 ##Contribution
 If you have found a bug, please create pull request with [mocha](https://www.npmjs.org/package/mocha) 
