@@ -100,8 +100,8 @@ l10n.register(cat.locator);
 
 ```
 
-As may notice `catberry-l10n` has server-side middleware that automatically sets
-browser locale to user cookie and you can use it from `$context.cookies.get` in
+As you may notice `catberry-l10n` has server-side middleware that automatically sets
+browser locale to user cookie and you can use this value from `$context.cookies.get` in
 your modules.
 
 Also you should include `/l10n.js` script into your root placeholder. This URL is
@@ -109,8 +109,8 @@ served by `catberry-l10n` middleware too.
 
 ##Pluralization
 Pluralization support was implemented using this [rules](https://github.com/translate/l10n-guide/blob/master/docs/l10n/pluralforms.rst).
-To pluralize localized value it must be set as array with all required plural 
-forms for locale language.
+For pluralization of localized value it must be set to array with all required 
+plural forms for locale language.
 
 ##Dust helper
 You can use dustjs helper that puts localized value anywhere you want:
@@ -143,15 +143,13 @@ It outputs `comment` word.
 ```
 It outputs `comments` word.
 
-More about pluralization you can find next in this readme.
-
 Also if you have `locale` value in template data context it is not needed to 
 specify parameter `locale` in helper because it will be automatically used from
-data context.
+template data context.
 
 ##Directly in code
-If you need to use localization with some complex logic you can access to
-localization provider and use it directly:
+If you need to use localization with some complex logic you can use
+localization provider directly:
 
 Localization dictionary:
 
@@ -190,6 +188,7 @@ Placeholder template:
 ```
 
 For 1 apple it will be `eat 1 apple`
+
 For 5 apples it will be `eat 5 apples`
 
 ##Contribution
