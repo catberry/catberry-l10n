@@ -49,7 +49,7 @@ module.exports = {
 		try {
 			var dust = locator.resolve('dust'),
 				helper = locator.resolveInstance(LocalizationHelper, config);
-			dust.helperManager.addHelper('l10n', helper.getDustHelper());
+			dust.helperManager.add('l10n', helper.getDustHelper());
 		} catch (e) {
 			//nothing to do.
 		}
