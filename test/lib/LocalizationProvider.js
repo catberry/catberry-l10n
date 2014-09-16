@@ -32,7 +32,7 @@
 
 var LocalizationLoaderMock = require('../mocks/LocalizationLoader'),
 	Logger = require('../mocks/Logger'),
-	LocalizationLoader = require('../../lib/server/LocalizationLoader'),
+	LocalizationLoader = require('../../lib/LocalizationLoader'),
 	LocalizationProvider = require('../../lib/LocalizationProvider'),
 	assert = require('assert'),
 	path = require('path'),
