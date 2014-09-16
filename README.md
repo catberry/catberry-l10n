@@ -1,4 +1,4 @@
-#Localization plugin for Catberry Framework [![Build Status](https://travis-ci.org/catberry/catberry-l10n.png?branch=master)](https://travis-ci.org/catberry/catberry-l10n) [![Coverage Status](https://coveralls.io/repos/catberry/catberry-l10n/badge.png)](https://coveralls.io/r/catberry/catberry-l10n)
+#Localization plugin for Catberry Framework 2.0 [![Build Status](https://travis-ci.org/catberry/catberry-l10n.png?branch=master)](https://travis-ci.org/catberry/catberry-l10n) [![Coverage Status](https://coveralls.io/repos/catberry/catberry-l10n/badge.png)](https://coveralls.io/r/catberry/catberry-l10n)
 [![NPM](https://nodei.co/npm/catberry-l10n.png)](https://nodei.co/npm/catberry-l10n/)
 
 ##Description
