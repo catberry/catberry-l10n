@@ -33,15 +33,15 @@
 var assert = require('assert'),
 	http = require('http'),
 	path = require('path'),
-	LocalizationLoader = require('../../../lib/server/LocalizationLoader'),
-	Logger = require('../../mocks/Logger'),
+	LocalizationLoader = require('../../lib/LocalizationLoader'),
+	Logger = require('../mocks/Logger'),
 	ServiceLocator = require('catberry-locator');
 
 var defaultLocale = 'ru',
 	defaultConfig = {
 		l10n: {
 			defaultLocale: defaultLocale,
-			path: path.join(__dirname, '..', '..', 'cases',
+			path: path.join(__dirname, '..', 'cases',
 				'lib', 'server', 'LocalizationLoader')
 		}
 	},
@@ -174,7 +174,7 @@ describe('server/LocalizationLoader', function () {
 			function () {
 				var locator = createLocator(),
 					config = Object.create(defaultConfig);
-				config.modulesFolder = path.join(__dirname, '..', '..', 'cases',
+				config.modulesFolder = path.join(__dirname, '..', 'cases',
 					'lib', 'server', 'LocalizationLoader', 'modules');
 				var loader = locator.resolveInstance(LocalizationLoader,
 						config),
