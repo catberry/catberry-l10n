@@ -42,6 +42,81 @@ var localizationPath = path.join(__dirname, '..',
 	'cases', 'lib', 'LocalizationProvider');
 
 describe('LocalizationProvider', function () {
+	describe('constructor', function () {
+		it('should throw error if l10n config is not specified',
+			function () {
+				var config = {},
+					locator = createLocator(config);
+
+				assert.throws(function () {
+					var provider = locator.resolve('localizationProvider');
+				});
+			});
+		it('should throw error if default locale is not specified',
+			function () {
+				var config = {
+						l10n: {}
+					},
+					locator = createLocator(config);
+
+				assert.throws(function () {
+					var provider = locator.resolve('localizationProvider');
+				});
+			});
+	});
+	describe('#getCurrentLocale', function () {
+		it('should get current locale value from context', function () {
+			var config = {
+					l10n: {
+						defaultLocale: 'en-us',
+						cookie: {
+							name: 'coolLocale'
+						}
+					}
+				},
+				locator = createLocator(config),
+				provider = locator.resolve('localizationProvider');
+
+			var locale = provider.getCurrentLocale({
+				cookies: {
+					get: function (name) {
+						if (name === config.l10n.cookie.name) {
+							return 'some-locale';
+						}
+					}
+				}
+			});
+
+			assert.strictEqual(
+				locale, 'some-locale', 'Wrong localized value'
+			);
+		});
+		it('should get current locale as default locale if cookie is empty',
+			function () {
+				var config = {
+						l10n: {
+							defaultLocale: 'en-us',
+							cookie: {
+								name: 'coolLocale'
+							}
+						}
+					},
+					locator = createLocator(config),
+					provider = locator.resolve('localizationProvider');
+
+				var locale = provider.getCurrentLocale({
+					cookies: {
+						get: function () {
+
+						}
+					}
+				});
+
+				assert.strictEqual(
+					locale, config.l10n.defaultLocale, 'Wrong localized value'
+				);
+			});
+	});
 	describe('#get', function () {
 		it('should get value from localization', function () {
 			var localizations = {
@@ -53,9 +128,12 @@ describe('LocalizationProvider', function () {
 					}
 				},
 				locator = createLocator({
+					l10n: {
+						defaultLocale: 'en'
+					},
 					localizations: localizations
 				}),
-				provider = locator.resolveInstance(LocalizationProvider);
+				provider = locator.resolve('localizationProvider');
 
 			assert.strictEqual(
 				provider.get('en', 'TEST_VALUE'), localizations.en.TEST_VALUE,
@@ -68,9 +146,12 @@ describe('LocalizationProvider', function () {
 		it('should return empty string if localization value is absent',
 			function () {
 				var locator = createLocator({
+						l10n: {
+							defaultLocale: 'en'
+						},
 						localizations: {}
 					}),
-					provider = locator.resolveInstance(LocalizationProvider);
+					provider = locator.resolve('localizationProvider');
 
 				assert.strictEqual(provider.get('en', 'TEST_VALUE'), '',
 					'Wrong localized value');
@@ -211,7 +292,9 @@ describe('LocalizationProvider', function () {
 
 function createLocator(config) {
 	var locator = new ServiceLocator();
+	locator.registerInstance('config', config);
 	locator.register('localizationLoader', LocalizationLoaderMock, config);
+	locator.register('localizationProvider', LocalizationProvider, config);
 
 	return locator;
 }
