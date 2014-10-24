@@ -40,13 +40,25 @@ l10n/
 ```
 
 Your application-based localization directory must always have a default 
-localization file and default name of locale must be set in application config, 
-for example:
+localization file and default name of locale must be set in catberry
+application config, for example:
 
 ```javascript
 {
 	l10n: {
-		defaultLocale: 'en-us'
+		// default locale used when value for specified locale not found
+		// this parameter is required
+		defaultLocale: 'en-us',
+		cookie: {
+			// name of locale cookie (Optional, 'locale' by default)
+			name: 'locale',
+			// max cookie age (Optional, 100 years by default)
+			maxAge: 3155692600,
+			// cookie path (Optional, empty by default)
+			path: '/',
+			// cookie domain (Optional, empty by default)
+			domain: 'some.domain.org'
+		}
 	},
 	someOtherParameter: 'someOtherValue'
 }
@@ -168,8 +180,8 @@ function Module($localizationProvider) {
 }
 
 Module.prototype.renderSomePlaceholder() {
-	// user always has locale in cookies (thanks to l10n middleware)
-	var locale = this.$context.cookies.get('locale'),
+	// user always has locale in context (thanks to l10n middleware)
+	var locale = this._l10n.getCurrentLocale(this.$context),
 		appleCount = Number(this.$context.state.apples);
 	return {
 		localizedEat: this._l10n.get(locale, 'EAT'),
