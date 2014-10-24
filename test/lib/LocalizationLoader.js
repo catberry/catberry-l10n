@@ -55,13 +55,13 @@ var defaultLocale = 'ru',
 localizations['en-us'].$pluralization = localizations.en.$pluralization = {
 	rule: '(n != 1)',
 	defaultRule: '(n%10==1 && n%100!=11 ? 0 : ' +
-		'n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)',
+	'n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)',
 	fromDefaultLocale: {}
 };
 
 localizations.ru.$pluralization = {
 	rule: '(n%10==1 && n%100!=11 ? 0 : ' +
-		'n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)'
+	'n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)'
 };
 
 describe('server/LocalizationLoader', function () {
@@ -233,8 +233,8 @@ describe('server/LocalizationLoader', function () {
 								'Wrong status');
 
 							assert.strictEqual(
-									response.headers['set-cookie'] instanceof
-									Array,
+								response.headers['set-cookie'] instanceof
+								Array,
 								true,
 								'Response should have cookies');
 
@@ -259,6 +259,69 @@ describe('server/LocalizationLoader', function () {
 				});
 			});
 
+		it('should set browser locale with specified cookie parameters',
+			function (done) {
+				var locator = createLocator(),
+					config = Object.create(defaultConfig.l10n);
+
+				config.cookie = {
+					name: 'testName',
+					path: '/some/path',
+					domain: 'some.domain.org',
+					maxAge: 500
+				};
+				var loader = locator.resolveInstance(
+						LocalizationLoader, {l10n: config}
+					),
+					server = createServer(loader.getMiddleware());
+
+				server.listen(8091, function () {
+					var expireDate = '',
+						request = http.request({
+							port: 8091,
+							agent: false,
+							headers: {
+								'Accept-Language': 'en-US,ru;q=0.8,en;q=0.4'
+							}
+						},
+						function (response) {
+							assert.strictEqual(
+								response.statusCode, 200, 'Wrong status'
+							);
+
+							assert.strictEqual(
+								response.headers['set-cookie'] instanceof
+								Array,
+								true,
+								'Response should have cookies');
+
+							assert.strictEqual(
+								response.headers['set-cookie'].length,
+								1,
+								'Response should have one cookie setup'
+							);
+
+							assert.strictEqual(
+								response.headers['set-cookie'][0],
+								'testName=en-us' +
+									'; Max-Age=' + config.cookie.maxAge +
+									'; Expires=' + expireDate.toUTCString() +
+									'; Path=' + config.cookie.path +
+									'; Domain=' + config.cookie.domain,
+								'Response cookie should have locale'
+							);
+
+							server.close(function () {
+								done();
+							});
+						});
+
+					expireDate = new Date((new Date()).getTime() +
+					config.cookie.maxAge * 1000);
+					request.end();
+				});
+			});
+
 		it('should set default locale if browser locale is absent',
 			function (done) {
 				var locator = createLocator(),
@@ -276,8 +339,8 @@ describe('server/LocalizationLoader', function () {
 								'Wrong status');
 
 							assert.strictEqual(
-									response.headers['set-cookie'] instanceof
-									Array,
+								response.headers['set-cookie'] instanceof
+								Array,
 								true,
 								'Response should have cookies');
 
