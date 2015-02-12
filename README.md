@@ -157,7 +157,7 @@ Component.prototype.render = function () {
 }
 ```
 
-Component's template (using Dust for example):
+Component's template (using [Dust](https://github.com/catberry/catberry-dust) for example):
 
 ```html
 {localizedEat} {localizedApple}
@@ -177,7 +177,5 @@ code is awesome.
 All changes should satisfy this [Code Style Guide](https://github.com/catberry/catberry/blob/4.0.0/docs/code-style-guide.md).
 
 Also your changes should be covered by unit tests using [mocha](https://www.npmjs.org/package/mocha).
-
-Denis Rechkunov <denis.rechkunov@gmail.com>
 
 Denis Rechkunov <denis.rechkunov@gmail.com>
