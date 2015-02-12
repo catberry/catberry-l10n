@@ -4,7 +4,7 @@
 Current version supports Catberry 4.0.
 
 ##Description
-This module adds localization support for [Cat-components](https://github.com/catberry/catberry/blob/4.0.0/docs/index.md#cat-components).
+This plugin adds localization support for [Cat-components](https://github.com/catberry/catberry/blob/4.0.0/docs/index.md#cat-components).
 
 It supports two contexts of localization:
  1. Application-based localization - files like en.json, en-us.json, 
@@ -19,15 +19,15 @@ language or arrays with plural forms.
 For example, your project tree can look like this:
 
 ```
-catberry_modules
-	module1/
+catberry_components
+	component1/
 		l10n/
 			en.json
 			en-us.json
 			en-gb.json
 			ru.json
 		...
-	module2/
+	component2/
 		l10n/
 			en.json
 			en-us.json
@@ -96,7 +96,7 @@ var localizationLoader = cat.locator.resolve('localizationLoader');
 // and get /l10n.js file for user's locale
 app.use(localizationLoader.getMiddleware());
 
-// localization middleware must be before Catberry
+// localization middleware should be before Catberry
 app.use(cat.getMiddleware());
 ...
 ```
