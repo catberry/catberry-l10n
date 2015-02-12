@@ -1,9 +1,10 @@
-#Localization plugin for Catberry Framework [![Build Status](https://travis-ci.org/catberry/catberry-l10n.png?branch=master)](https://travis-ci.org/catberry/catberry-l10n) [![Coverage Status](https://coveralls.io/repos/catberry/catberry-l10n/badge.png)](https://coveralls.io/r/catberry/catberry-l10n)
+#Localization Plugin for [Catberry Framework](https://github.com/catberry/catberry) [![Build Status](https://travis-ci.org/catberry/catberry-l10n.png?branch=master)](https://travis-ci.org/catberry/catberry-l10n) [![Coverage Status](https://coveralls.io/repos/catberry/catberry-l10n/badge.png)](https://coveralls.io/r/catberry/catberry-l10n)
 [![NPM](https://nodei.co/npm/catberry-l10n.png)](https://nodei.co/npm/catberry-l10n/)
+
 Current version supports Catberry 4.0.
 
 ##Description
-This module adds localization support for all [Catberry](https://github.com/catberry/catberry) components.
+This module adds localization support for [Cat-components](https://github.com/catberry/catberry/blob/4.0.0/docs/index.md#cat-components).
 
 It supports two contexts of localization:
  1. Application-based localization - files like en.json, en-us.json, 
