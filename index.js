@@ -31,7 +31,6 @@
 'use strict';
 
 var LocalizationProvider = require('./lib/LocalizationProvider'),
-	LocalizationHelper = require('./lib/LocalizationHelper'),
 	LocalizationLoader = require('./lib/LocalizationLoader');
 
 module.exports = {
@@ -45,14 +44,6 @@ module.exports = {
 			LocalizationProvider, config, true);
 		locator.register('localizationLoader',
 			LocalizationLoader, config, true);
-
-		try {
-			var dust = locator.resolve('dust'),
-				helper = locator.resolveInstance(LocalizationHelper, config);
-			dust.helperManager.add('l10n', helper.getDustHelper());
-		} catch (e) {
-			//nothing to do.
-		}
 	},
 	LocalizationProvider: LocalizationProvider,
 	LocalizationLoader: LocalizationLoader
