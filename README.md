@@ -1,9 +1,9 @@
-#Localization Plugin for [Catberry Framework](https://github.com/catberry/catberry) [![Build Status](https://travis-ci.org/catberry/catberry-l10n.png?branch=master)](https://travis-ci.org/catberry/catberry-l10n) [![Coverage Status](https://coveralls.io/repos/catberry/catberry-l10n/badge.png)](https://coveralls.io/r/catberry/catberry-l10n)
+# Localization Plugin for [Catberry Framework](https://github.com/catberry/catberry) [![Build Status](https://travis-ci.org/catberry/catberry-l10n.png?branch=master)](https://travis-ci.org/catberry/catberry-l10n) [![Coverage Status](https://coveralls.io/repos/catberry/catberry-l10n/badge.png)](https://coveralls.io/r/catberry/catberry-l10n)
 [![NPM](https://nodei.co/npm/catberry-l10n.png)](https://nodei.co/npm/catberry-l10n/)
 
 Current version supports Catberry 4.0.
 
-##Description
+## Description
 This plugin adds localization support for [Cat-components](https://github.com/catberry/catberry/blob/4.0.0/docs/index.md#cat-components).
 
 It supports two contexts of localization:
@@ -73,7 +73,7 @@ localization if they have matching keys. If localization specified by user
 does not have such localization key then value from default localization will 
 be returned or empty string if default localization also does not have such key.
 
-##Usage
+## Usage
 To use localization plugin you should register its components into Catberry's
 [Service Locator](https://github.com/catberry/catberry-locator) like this:
 
@@ -121,12 +121,12 @@ value from `$context.cookies.get` in your stores and components.
 Also you should include `/l10n.js` script into your HEAD element. This URL is
 served by `catberry-l10n` middleware too.
 
-##Pluralization
+## Pluralization
 Pluralization support was implemented using these [rules](https://github.com/translate/l10n-guide/blob/master/docs/l10n/pluralforms.rst).
 For pluralization of localized value it should be set to array with all required
 plural forms for locale's language.
 
-##How to use
+## How to use
 Localization dictionary:
 
 ```json
@@ -167,7 +167,7 @@ For 1 apple it will be `eat 1 apple`
 
 For 5 apples it will be `eat 5 apples`
 
-##Contribution
+## Contribution
 If you have found a bug, please create pull request with [mocha](https://www.npmjs.org/package/mocha) 
 unit-test which reproduces it or describe all details in an issue if you can not
 implement test. If you want to propose some improvements just create an issue or
