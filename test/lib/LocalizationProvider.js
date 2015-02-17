@@ -36,6 +36,7 @@ var LocalizationLoaderMock = require('../mocks/LocalizationLoader'),
 	LocalizationProvider = require('../../lib/LocalizationProvider'),
 	assert = require('assert'),
 	path = require('path'),
+	events = require('events'),
 	ServiceLocator = require('catberry-locator');
 
 var localizationPath = path.join(__dirname, '..',
@@ -137,10 +138,12 @@ describe('LocalizationProvider', function () {
 
 			assert.strictEqual(
 				provider.get('en', 'TEST_VALUE'), localizations.en.TEST_VALUE,
-				'Wrong localized value');
+				'Wrong localized value'
+			);
 			assert.strictEqual(
 				provider.get('ru', 'TEST_VALUE'), localizations.ru.TEST_VALUE,
-				'Wrong localized value');
+				'Wrong localized value'
+			);
 		});
 
 		it('should return empty string if localization value is absent',
@@ -153,139 +156,202 @@ describe('LocalizationProvider', function () {
 					}),
 					provider = locator.resolve('localizationProvider');
 
-				assert.strictEqual(provider.get('en', 'TEST_VALUE'), '',
-					'Wrong localized value');
-				assert.strictEqual(provider.get('ru', 'TEST_VALUE'), '',
-					'Wrong localized value');
+				assert.strictEqual(
+					provider.get('en', 'TEST_VALUE'), '',
+					'Wrong localized value'
+				);
+				assert.strictEqual(
+					provider.get('ru', 'TEST_VALUE'), '',
+					'Wrong localized value'
+				);
 			});
 
-		it('should return first plural form if value is array', function () {
-			var config = {
-					l10n: {
-						defaultLocale: 'ru',
-						path: localizationPath
-					}
-				},
-				locator = new ServiceLocator();
-			locator.register('localizationLoader', LocalizationLoader, config);
-			locator.register('logger', Logger);
-			var provider = locator.resolveInstance(
-				LocalizationProvider, config);
+		it('should return first plural form if value is array',
+			function (done) {
+				var config = {
+						l10n: {
+							defaultLocale: 'ru',
+							path: localizationPath
+						}
+					},
+					locator = createLocator(config),
+					eventBus = locator.resolve('eventBus');
+				locator.register('localizationLoader',
+					LocalizationLoader, config
+				);
+				var provider = locator.resolveInstance(
+					LocalizationProvider, config);
 
-			assert.strictEqual(provider.get('en', 'TEST_VALUE'),
-				'en form1',
-				'Wrong localized value');
-			assert.strictEqual(provider.get('ru', 'TEST_VALUE'),
-				'ru form1',
-				'Wrong localized value');
-
-		});
+				eventBus
+					.on('error', done)
+					.on('l10nLoaded', function () {
+						assert.strictEqual(
+							provider.get('en', 'TEST_VALUE'),
+							'en form1',
+							'Wrong localized value'
+						);
+						assert.strictEqual(
+							provider.get('ru', 'TEST_VALUE'),
+							'ru form1',
+							'Wrong localized value'
+						);
+						done();
+					});
+				eventBus.emit('allComponentsLoaded');
+			});
 	});
 
 	describe('#pluralize', function () {
-		it('should return plural form from locale', function () {
+		it('should return plural form from locale', function (done) {
 			var config = {
 					l10n: {
 						defaultLocale: 'ru',
 						path: localizationPath
 					}
 				},
-				locator = new ServiceLocator();
+				locator = createLocator(config),
+				eventBus = locator.resolve('eventBus');
 			locator.register('localizationLoader', LocalizationLoader, config);
-			locator.register('logger', Logger);
 			var provider = locator.resolveInstance(
-				LocalizationProvider, config);
+				LocalizationProvider, config
+			);
 
-			assert.strictEqual(provider.pluralize('en', 'TEST_VALUE', 1),
-				'en form1',
-				'Wrong localized value');
-			assert.strictEqual(provider.pluralize('en', 'TEST_VALUE', 2),
-				'en form2',
-				'Wrong localized value');
-
-			assert.strictEqual(provider.pluralize('ru', 'TEST_VALUE', 1),
-				'ru form1',
-				'Wrong localized value');
-			assert.strictEqual(provider.pluralize('ru', 'TEST_VALUE', 2),
-				'ru form2',
-				'Wrong localized value');
-			assert.strictEqual(provider.pluralize('ru', 'TEST_VALUE', 5),
-				'ru form3',
-				'Wrong localized value');
+			eventBus
+				.on('error', done)
+				.on('l10nLoaded', function () {
+					assert.strictEqual(
+						provider.pluralize('en', 'TEST_VALUE', 1),
+						'en form1',
+						'Wrong localized value'
+					);
+					assert.strictEqual(
+						provider.pluralize('en', 'TEST_VALUE', 2),
+						'en form2',
+						'Wrong localized value'
+					);
+					assert.strictEqual(
+						provider.pluralize('ru', 'TEST_VALUE', 1),
+						'ru form1',
+						'Wrong localized value'
+					);
+					assert.strictEqual(
+						provider.pluralize('ru', 'TEST_VALUE', 2),
+						'ru form2',
+						'Wrong localized value'
+					);
+					assert.strictEqual(
+						provider.pluralize('ru', 'TEST_VALUE', 5),
+						'ru form3',
+						'Wrong localized value'
+					);
+					done();
+				});
+			eventBus.emit('allComponentsLoaded');
 		});
 
 		it('should return plural form from default locale if not found',
-			function () {
+			function (done) {
 				var config = {
 						l10n: {
 							defaultLocale: 'ru',
 							path: localizationPath
 						}
 					},
-					locator = new ServiceLocator();
-				locator.register('localizationLoader', LocalizationLoader,
-					config);
-				locator.register('logger', Logger);
+					locator = createLocator(config),
+					eventBus = locator.resolve('eventBus');
+				locator.register(
+					'localizationLoader', LocalizationLoader, config
+				);
 				var provider = locator.resolveInstance(
-					LocalizationProvider, config);
+					LocalizationProvider, config
+				);
 
-				assert.strictEqual(
-					provider.pluralize('en', 'TEST_VALUE_ONLY_RU', 5),
-					'ru-only form3',
-					'Wrong localized value');
-				assert.strictEqual(
-					provider.pluralize('ru', 'TEST_VALUE_ONLY_RU', 5),
-					'ru-only form3',
-					'Wrong localized value');
+				eventBus
+					.on('error', done)
+					.on('l10nLoaded', function () {
+						assert.strictEqual(
+							provider.pluralize('en', 'TEST_VALUE_ONLY_RU', 5),
+							'ru-only form3',
+							'Wrong localized value'
+						);
+						assert.strictEqual(
+							provider.pluralize('ru', 'TEST_VALUE_ONLY_RU', 5),
+							'ru-only form3',
+							'Wrong localized value'
+						);
+						done();
+					});
+				eventBus.emit('allComponentsLoaded');
 			});
 
-		it('should return string value if not array specified', function () {
-			var config = {
-					l10n: {
-						defaultLocale: 'ru',
-						path: localizationPath
-					}
-				},
-				locator = new ServiceLocator();
-			locator.register('localizationLoader', LocalizationLoader, config);
-			locator.register('logger', Logger);
-			var provider = locator.resolveInstance(
-				LocalizationProvider, config);
-
-			assert.strictEqual(
-				provider.pluralize('en', 'TEST_VALUE3', 5),
-				'en form1',
-				'Wrong localized value');
-			assert.strictEqual(
-				provider.pluralize('ru', 'TEST_VALUE3', 5),
-				'ru form1',
-				'Wrong localized value');
-		});
-
-		it('should return empty string if incorrect count of forms',
-			function () {
+		it('should return string value if not array specified',
+			function (done) {
 				var config = {
 						l10n: {
 							defaultLocale: 'ru',
 							path: localizationPath
 						}
 					},
-					locator = new ServiceLocator();
-				locator.register('localizationLoader', LocalizationLoader,
-					config);
-				locator.register('logger', Logger);
+					locator = createLocator(config),
+					eventBus = locator.resolve('eventBus');
+				locator.register(
+					'localizationLoader', LocalizationLoader, config
+				);
 				var provider = locator.resolveInstance(
-					LocalizationProvider, config);
+					LocalizationProvider, config
+				);
+				eventBus
+					.on('error', done)
+					.on('l10nLoaded', function () {
+						assert.strictEqual(
+							provider.pluralize('en', 'TEST_VALUE3', 5),
+							'en form1',
+							'Wrong localized value'
+						);
+						assert.strictEqual(
+							provider.pluralize('ru', 'TEST_VALUE3', 5),
+							'ru form1',
+							'Wrong localized value'
+						);
+						done();
+					});
+				eventBus.emit('allComponentsLoaded');
+			});
 
-				assert.strictEqual(
-					provider.pluralize('en', 'TEST_VALUE2', 5),
-					'',
-					'Wrong localized value');
+		it('should return empty string if incorrect count of forms',
+			function (done) {
+				var config = {
+						l10n: {
+							defaultLocale: 'ru',
+							path: localizationPath
+						}
+					},
+					locator = createLocator(config),
+					eventBus = locator.resolve('eventBus');
+				locator.register(
+					'localizationLoader', LocalizationLoader, config
+				);
+				var provider = locator.resolveInstance(
+					LocalizationProvider, config
+				);
 
-				assert.strictEqual(
-					provider.pluralize('ru', 'TEST_VALUE2', 5),
-					'',
-					'Wrong localized value');
+				eventBus
+					.on('error', done)
+					.on('l10nLoaded', function () {
+						assert.strictEqual(
+							provider.pluralize('en', 'TEST_VALUE2', 5),
+							'',
+							'Wrong localized value'
+						);
+
+						assert.strictEqual(
+							provider.pluralize('ru', 'TEST_VALUE2', 5),
+							'',
+							'Wrong localized value'
+						);
+						done();
+					});
+				eventBus.emit('allComponentsLoaded');
 			});
 	});
 });
@@ -293,6 +359,14 @@ describe('LocalizationProvider', function () {
 function createLocator(config) {
 	var locator = new ServiceLocator();
 	locator.registerInstance('config', config);
+	locator.registerInstance('serviceLocator', locator);
+	locator.registerInstance('eventBus', new events.EventEmitter());
+	locator.registerInstance('componentLoader', {
+		getComponentsByNames: function () {
+			return {};
+		}
+	});
+	locator.register('logger', Logger);
 	locator.register('localizationLoader', LocalizationLoaderMock, config);
 	locator.register('localizationProvider', LocalizationProvider, config);
 
