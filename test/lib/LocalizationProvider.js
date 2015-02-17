@@ -79,7 +79,7 @@ describe('LocalizationProvider', function () {
 				provider = locator.resolve('localizationProvider');
 
 			var locale = provider.getCurrentLocale({
-				cookies: {
+				cookie: {
 					get: function (name) {
 						if (name === config.l10n.cookie.name) {
 							return 'some-locale';
@@ -106,7 +106,7 @@ describe('LocalizationProvider', function () {
 					provider = locator.resolve('localizationProvider');
 
 				var locale = provider.getCurrentLocale({
-					cookies: {
+					cookie: {
 						get: function () {
 
 						}
