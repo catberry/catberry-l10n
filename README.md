@@ -116,7 +116,7 @@ l10n.register(cat.locator);
 
 As you may notice, `catberry-l10n` has server-side middleware that
 automatically sets browser locale to the user's cookie and you can use this
-value from `$context.cookies.get` in your stores and components.
+value from `$context.cookie.get` in your stores and components.
 
 Also you should include `/l10n.js` script into your HEAD element. This URL is
 served by `catberry-l10n` middleware too.
