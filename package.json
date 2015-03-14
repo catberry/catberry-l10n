@@ -17,6 +17,9 @@
 		"url": "git://github.com/catberry/catberry-l10n.git"
 	},
 	"main": "./index.js",
+	"peerDependencies": {
+		"catberry": "^4.0.0"
+	},
 	"devDependencies": {
 		"promise": "^6.1.0",
 		"istanbul-harmony": "~0.3.1",
