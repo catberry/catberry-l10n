@@ -4,6 +4,16 @@
 	"author": "Denis Rechkunov <denis.rechkunov@gmail.com>",
 	"description": "Localization plugin for Catberry Framework",
 	"homepage": "https://github.com/catberry/catberry-l10n",
+	"contributors": [
+		{
+			"name": "Denis Rechkunov",
+			"email": "d.rechkunov@flamp.ru"
+		},
+		{
+			"name": "Mansur Gabidullin",
+			"email": "mansur.gabidullin@gmail.com"
+		}
+	],
 	"keywords": [
 		"catberry", "localization", "l10n", "pluralization", "plural",
 		"language", "middleware", "connect", "module", "express"
