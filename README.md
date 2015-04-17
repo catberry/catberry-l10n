@@ -167,6 +167,13 @@ For 1 apple it will be `eat 1 apple`
 
 For 5 apples it will be `eat 5 apples`
 
+Also, you can change current locale using `changeLocale`
+method of `$localizationProvider` like this:
+```
+this._l10n.changeLocale('en-gb', this.$context);
+```
+it changes the locale cookie and reloads the page.
+
 ## Contribution
 If you have found a bug, please create pull request with [mocha](https://www.npmjs.org/package/mocha) 
 unit-test which reproduces it or describe all details in an issue if you can not
