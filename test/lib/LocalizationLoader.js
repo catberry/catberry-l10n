@@ -690,11 +690,11 @@ function createLocator(components) {
 	var locator = new ServiceLocator();
 	locator.register('logger', Logger);
 	locator.registerInstance('serviceLocator', locator);
-	locator.registerInstance('componentLoader', {
-		getComponentsByNames: function () {
-			return components;
-		}
-	});
+	var componentFinder = new events.EventEmitter();
+	componentFinder.find = function () {
+		return Promise.resolve(components);
+	};
+	locator.registerInstance('componentFinder', componentFinder);
 	locator.registerInstance('eventBus', new events.EventEmitter());
 	return locator;
 }
