@@ -361,11 +361,11 @@ function createLocator(config) {
 	locator.registerInstance('config', config);
 	locator.registerInstance('serviceLocator', locator);
 	locator.registerInstance('eventBus', new events.EventEmitter());
-	locator.registerInstance('componentLoader', {
-		getComponentsByNames: function () {
-			return {};
-		}
-	});
+	var componentFinder = new events.EventEmitter();
+	componentFinder.find = function () {
+		return Promise.resolve({});
+	};
+	locator.registerInstance('componentFinder', componentFinder);
 	locator.register('logger', Logger);
 	locator.register('localizationLoader', LocalizationLoaderMock, config);
 	locator.register('localizationProvider', LocalizationProvider, config);
