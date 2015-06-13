@@ -51,6 +51,8 @@ application config, for example:
 		// default locale used when value for specified locale not found
 		// this parameter is required
 		defaultLocale: 'en-us',
+		// display keys of not founded localization strings
+		placeholder: false,
 		cookie: {
 			// name of locale cookie (Optional, 'locale' by default)
 			name: 'locale',
