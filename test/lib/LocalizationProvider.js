@@ -166,6 +166,29 @@ describe('LocalizationProvider', function () {
 				);
 			});
 
+		it('should return key instead of empty string when allowed placeholders',
+			function () {
+				var locator = createLocator({
+						l10n: {
+							defaultLocale: 'en',
+							placeholder: true
+						},
+						localizations: {}
+					}),
+					provider = locator.resolve('localizationProvider');
+
+				var key = 'TEST_VALUE';
+
+				assert.strictEqual(
+					provider.get('en', key), key,
+					'Wrong localized value'
+				);
+				assert.strictEqual(
+					provider.get('ru', key), key,
+					'Wrong localized value'
+				);
+			});
+
 		it('should return first plural form if value is array',
 			function (done) {
 				var config = {
@@ -347,6 +370,82 @@ describe('LocalizationProvider', function () {
 						assert.strictEqual(
 							provider.pluralize('ru', 'TEST_VALUE2', 5),
 							'',
+							'Wrong localized value'
+						);
+						done();
+					});
+				eventBus.emit('allComponentsLoaded');
+			});
+
+		it('should return key if incorrect count of forms and placeholders allowed',
+			function (done) {
+				var config = {
+						l10n: {
+							defaultLocale: 'ru',
+							path: localizationPath,
+							placeholder: true
+						}
+					},
+					locator = createLocator(config),
+					eventBus = locator.resolve('eventBus');
+				locator.register(
+					'localizationLoader', LocalizationLoader, config
+				);
+				var provider = locator.resolveInstance(
+					LocalizationProvider, config
+				);
+
+				eventBus
+					.on('error', done)
+					.on('l10nLoaded', function () {
+						var key = 'TEST_VALUE2';
+						assert.strictEqual(
+							provider.pluralize('en', key, 5),
+							key,
+							'Wrong localized value'
+						);
+
+						assert.strictEqual(
+							provider.pluralize('ru', key, 5),
+							key,
+							'Wrong localized value'
+						);
+						done();
+					});
+				eventBus.emit('allComponentsLoaded');
+			});
+
+		it('should return key if localization absent and placeholders allowed',
+			function (done) {
+				var config = {
+						l10n: {
+							defaultLocale: 'ru',
+							path: localizationPath,
+							placeholder: true
+						}
+					},
+					locator = createLocator(config),
+					eventBus = locator.resolve('eventBus');
+				locator.register(
+					'localizationLoader', LocalizationLoader, config
+				);
+				var provider = locator.resolveInstance(
+					LocalizationProvider, config
+				);
+
+				eventBus
+					.on('error', done)
+					.on('l10nLoaded', function () {
+						var key = 'TEST_VALUE4';
+						assert.strictEqual(
+							provider.pluralize('en', key, 5),
+							key,
+							'Wrong localized value'
+						);
+
+						assert.strictEqual(
+							provider.pluralize('ru', key, 5),
+							key,
 							'Wrong localized value'
 						);
 						done();
