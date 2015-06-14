@@ -1,4 +1,4 @@
-# Localization Plugin for [Catberry Framework](https://github.com/catberry/catberry) [![Build Status](https://travis-ci.org/catberry/catberry-l10n.png?branch=master)](https://travis-ci.org/catberry/catberry-l10n) [![Coverage Status](https://coveralls.io/repos/catberry/catberry-l10n/badge.png)](https://coveralls.io/r/catberry/catberry-l10n)
+# Localization Plugin for [Catberry Framework](https://github.com/catberry/catberry) [![Build Status](https://travis-ci.org/catberry/catberry-l10n.png?branch=master)](https://travis-ci.org/catberry/catberry-l10n) [![codecov.io](http://codecov.io/github/catberry/catberry-l10n/coverage.svg?branch=master)](http://codecov.io/github/catberry/catberry-l10n?branch=master)
 [![NPM](https://nodei.co/npm/catberry-l10n.png)](https://nodei.co/npm/catberry-l10n/)
 
 Current version supports Catberry 4.0.
