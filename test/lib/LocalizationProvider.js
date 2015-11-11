@@ -107,9 +107,7 @@ describe('LocalizationProvider', function () {
 
 				var locale = provider.getCurrentLocale({
 					cookie: {
-						get: function () {
-
-						}
+						get: function () { }
 					}
 				});
 
