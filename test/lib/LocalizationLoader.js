@@ -372,7 +372,9 @@ describe('server/LocalizationLoader', function () {
 					maxAge: 500
 				};
 				var loader = locator.resolveInstance(
-						LocalizationLoader, {l10n: config}
+						LocalizationLoader, {
+							l10n: config
+						}
 					),
 					server = createServer(loader.getMiddleware());
 
