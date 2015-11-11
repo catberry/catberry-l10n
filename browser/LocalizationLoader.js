@@ -39,7 +39,7 @@ module.exports = LocalizationLoader;
  */
 function LocalizationLoader($window) {
 	this._localization = $window.localization &&
-		typeof($window.localization) === 'object' ? $window.localization : {};
+		typeof ($window.localization) === 'object' ? $window.localization : {};
 }
 
 /**

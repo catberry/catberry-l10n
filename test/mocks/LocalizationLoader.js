@@ -40,7 +40,7 @@ LocalizationLoader.prototype._localizations = {};
 
 LocalizationLoader.prototype.load = function (locale) {
 	if (this._localizations[locale] &&
-		typeof(this._localizations[locale]) === 'object') {
+		typeof (this._localizations[locale]) === 'object') {
 		return this._localizations[locale];
 	}
 
