@@ -30,19 +30,19 @@
 
 'use strict';
 
-module.exports = LocalizationLoader;
-
-function LocalizationLoader(localizations) {
-	this._localizations = localizations || this._localizations;
-}
-
-LocalizationLoader.prototype._localizations = {};
-
-LocalizationLoader.prototype.load = function (locale) {
-	if (this._localizations[locale] &&
-		typeof (this._localizations[locale]) === 'object') {
-		return this._localizations[locale];
+class LocalizationLoader {
+	constructor(localizations) {
+		this._localizations = localizations || {};
 	}
 
-	return {};
-};
+	load(locale) {
+		if (this._localizations[locale] &&
+			typeof (this._localizations[locale]) === 'object') {
+			return this._localizations[locale];
+		}
+		return {};
+
+	}
+}
+
+module.exports = LocalizationLoader;
