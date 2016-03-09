@@ -30,29 +30,25 @@
 
 'use strict';
 
-module.exports = LocalizationLoader;
+class LocalizationLoader {
 
-/**
- * Creates new instance of localization loader.
- * @param {Window} $window browser window.
- * @constructor
- */
-function LocalizationLoader($window) {
-	this._localization = $window.localization &&
-		typeof ($window.localization) === 'object' ? $window.localization : {};
+	/**
+	 * Creates new instance of localization loader.
+	 * @param {ServiceLocator} locator Locator to resolve dependencies.
+	 */
+	constructor(locator) {
+		const window = locator.resolve('window');
+		this._localization = window.localization &&
+			typeof (window.localization) === 'object' ? window.localization : {};
+	}
+
+	/**
+	 * Loads localization by locale.
+	 * @returns {Object} Object with localization.
+	 */
+	load() {
+		return this._localization;
+	}
 }
 
-/**
- * Current localization.
- * @type {Object}
- * @private
- */
-LocalizationLoader.prototype._localization = null;
-
-/**
- * Loads localization by locale.
- * @returns {Object} Object with localization.
- */
-LocalizationLoader.prototype.load = function () {
-	return this._localization;
-};
+module.exports = LocalizationLoader;

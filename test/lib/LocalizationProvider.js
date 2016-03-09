@@ -30,60 +30,61 @@
 
 'use strict';
 
-var LocalizationLoaderMock = require('../mocks/LocalizationLoader'),
-	Logger = require('../mocks/Logger'),
-	LocalizationLoader = require('../../lib/LocalizationLoader'),
-	LocalizationProvider = require('../../lib/LocalizationProvider'),
-	assert = require('assert'),
-	path = require('path'),
-	events = require('events'),
-	ServiceLocator = require('catberry-locator');
+const LocalizationLoaderMock = require('../mocks/LocalizationLoader');
+const Logger = require('../mocks/Logger');
+const LocalizationLoader = require('../../lib/LocalizationLoader');
+const LocalizationProvider = require('../../lib/LocalizationProvider');
+const assert = require('assert');
+const path = require('path');
+const events = require('events');
+const ServiceLocator = require('catberry-locator');
 
-var localizationPath = path.join(__dirname, '..',
+const localizationPath = path.join(__dirname, '..',
 	'cases', 'lib', 'LocalizationProvider');
 
-describe('LocalizationProvider', function () {
-	describe('constructor', function () {
-		it('should throw error if l10n config is not specified',
-			function () {
-				var config = {},
-					locator = createLocator(config);
+/* eslint max-nested-callbacks: [2, 4]*/
 
-				assert.throws(function () {
-					var provider = locator.resolve('localizationProvider');
+describe('LocalizationProvider', () => {
+	describe('constructor', () => {
+		it('should throw error if l10n config is not specified',
+			() => {
+				const locator = createLocator({});
+
+				assert.throws(() => {
+					const provider = new LocalizationProvider(locator);
 				});
 			});
 		it('should throw error if default locale is not specified',
-			function () {
-				var config = {
-						l10n: {}
-					},
-					locator = createLocator(config);
+			() => {
+				const config = {
+					l10n: {}
+				};
+				const locator = createLocator(config);
 
-				assert.throws(function () {
-					var provider = locator.resolve('localizationProvider');
+				assert.throws(() => {
+					const provider = new LocalizationProvider(locator);
 				});
 			});
 	});
-	describe('#getCurrentLocale', function () {
-		it('should get current locale value from context', function () {
-			var config = {
-					l10n: {
-						defaultLocale: 'en-us',
-						cookie: {
-							name: 'coolLocale'
-						}
+	describe('#getCurrentLocale', () => {
+		it('should get current locale value from context', () => {
+			const config = {
+				l10n: {
+					defaultLocale: 'en-us',
+					cookie: {
+						name: 'coolLocale'
 					}
-				},
-				locator = createLocator(config),
-				provider = locator.resolve('localizationProvider');
-
-			var locale = provider.getCurrentLocale({
+				}
+			};
+			const locator = createLocator(config);
+			const provider = new LocalizationProvider(locator);
+			const locale = provider.getCurrentLocale({
 				cookie: {
-					get: function (name) {
+					get: name => {
 						if (name === config.l10n.cookie.name) {
 							return 'some-locale';
 						}
+						return null;
 					}
 				}
 			});
@@ -93,21 +94,20 @@ describe('LocalizationProvider', function () {
 			);
 		});
 		it('should get current locale as default locale if cookie is empty',
-			function () {
-				var config = {
-						l10n: {
-							defaultLocale: 'en-us',
-							cookie: {
-								name: 'coolLocale'
-							}
+			() => {
+				const config = {
+					l10n: {
+						defaultLocale: 'en-us',
+						cookie: {
+							name: 'coolLocale'
 						}
-					},
-					locator = createLocator(config),
-					provider = locator.resolve('localizationProvider');
-
-				var locale = provider.getCurrentLocale({
+					}
+				};
+				const locator = createLocator(config);
+				const provider = new LocalizationProvider(locator);
+				const locale = provider.getCurrentLocale({
 					cookie: {
-						get: function () { }
+						get: () => { }
 					}
 				});
 
@@ -116,23 +116,25 @@ describe('LocalizationProvider', function () {
 				);
 			});
 	});
-	describe('#get', function () {
-		it('should get value from localization', function () {
-			var localizations = {
-					en: {
-						TEST_VALUE: 'en test'
-					},
-					ru: {
-						TEST_VALUE: 'ru test'
-					}
+	describe('#get', () => {
+		it('should get value from localization', () => {
+			const localizations = {
+				en: {
+					TEST_VALUE: 'en test'
 				},
-				locator = createLocator({
-					l10n: {
-						defaultLocale: 'en'
-					},
-					localizations: localizations
-				}),
-				provider = locator.resolve('localizationProvider');
+				ru: {
+					TEST_VALUE: 'ru test'
+				}
+			};
+			const locator = createLocator({
+				l10n: {
+					defaultLocale: 'en'
+				},
+				localizations
+			});
+
+			locator.registerInstance('localizations', localizations);
+			const provider = new LocalizationProvider(locator);
 
 			assert.strictEqual(
 				provider.get('en', 'TEST_VALUE'), localizations.en.TEST_VALUE,
@@ -145,14 +147,14 @@ describe('LocalizationProvider', function () {
 		});
 
 		it('should return empty string if localization value is absent',
-			function () {
-				var locator = createLocator({
-						l10n: {
-							defaultLocale: 'en'
-						},
-						localizations: {}
-					}),
-					provider = locator.resolve('localizationProvider');
+			() => {
+				const locator = createLocator({
+					l10n: {
+						defaultLocale: 'en'
+					},
+					localizations: {}
+				});
+				const provider = new LocalizationProvider(locator);
 
 				assert.strictEqual(
 					provider.get('en', 'TEST_VALUE'), '',
@@ -165,17 +167,18 @@ describe('LocalizationProvider', function () {
 			});
 
 		it('should return key instead of empty string when allowed placeholders',
-			function () {
-				var locator = createLocator({
-						l10n: {
-							defaultLocale: 'en',
-							placeholder: true
-						},
-						localizations: {}
-					}),
-					provider = locator.resolve('localizationProvider');
+			() => {
+				const locator = createLocator({
+					l10n: {
+						defaultLocale: 'en',
+						placeholder: true
+					},
+					localizations: {}
+				});
 
-				var key = 'TEST_VALUE';
+				const provider = new LocalizationProvider(locator);
+
+				const key = 'TEST_VALUE';
 
 				assert.strictEqual(
 					provider.get('en', key), key,
@@ -188,24 +191,21 @@ describe('LocalizationProvider', function () {
 			});
 
 		it('should return first plural form if value is array',
-			function (done) {
-				var config = {
-						l10n: {
-							defaultLocale: 'ru',
-							path: localizationPath
-						}
-					},
-					locator = createLocator(config),
-					eventBus = locator.resolve('eventBus');
-				locator.register('localizationLoader',
-					LocalizationLoader, config
-				);
-				var provider = locator.resolveInstance(
-					LocalizationProvider, config);
+			done => {
+				const config = {
+					l10n: {
+						defaultLocale: 'ru',
+						path: localizationPath
+					}
+				};
+				const locator = createLocator(config);
+				const eventBus = locator.resolve('eventBus');
+				locator.register('localizationLoader', LocalizationLoader);
+				const provider = new LocalizationProvider(locator);
 
 				eventBus
 					.on('error', done)
-					.on('l10nLoaded', function () {
+					.on('l10nLoaded', () => {
 						assert.strictEqual(
 							provider.get('en', 'TEST_VALUE'),
 							'en form1',
@@ -222,24 +222,22 @@ describe('LocalizationProvider', function () {
 			});
 	});
 
-	describe('#pluralize', function () {
-		it('should return plural form from locale', function (done) {
-			var config = {
-					l10n: {
-						defaultLocale: 'ru',
-						path: localizationPath
-					}
-				},
-				locator = createLocator(config),
-				eventBus = locator.resolve('eventBus');
-			locator.register('localizationLoader', LocalizationLoader, config);
-			var provider = locator.resolveInstance(
-				LocalizationProvider, config
-			);
+	describe('#pluralize', () => {
+		it('should return plural form from locale', done => {
+			const config = {
+				l10n: {
+					defaultLocale: 'ru',
+					path: localizationPath
+				}
+			};
+			const locator = createLocator(config);
+			const eventBus = locator.resolve('eventBus');
+			locator.register('localizationLoader', LocalizationLoader);
+			const provider = new LocalizationProvider(locator);
 
 			eventBus
 				.on('error', done)
-				.on('l10nLoaded', function () {
+				.on('l10nLoaded', () => {
 					assert.strictEqual(
 						provider.pluralize('en', 'TEST_VALUE', 1),
 						'en form1',
@@ -271,25 +269,21 @@ describe('LocalizationProvider', function () {
 		});
 
 		it('should return plural form from default locale if not found',
-			function (done) {
-				var config = {
-						l10n: {
-							defaultLocale: 'ru',
-							path: localizationPath
-						}
-					},
-					locator = createLocator(config),
-					eventBus = locator.resolve('eventBus');
-				locator.register(
-					'localizationLoader', LocalizationLoader, config
-				);
-				var provider = locator.resolveInstance(
-					LocalizationProvider, config
-				);
+			done => {
+				const config = {
+					l10n: {
+						defaultLocale: 'ru',
+						path: localizationPath
+					}
+				};
+				const locator = createLocator(config);
+				const eventBus = locator.resolve('eventBus');
+				locator.register('localizationLoader', LocalizationLoader);
+				const provider = new LocalizationProvider(locator);
 
 				eventBus
 					.on('error', done)
-					.on('l10nLoaded', function () {
+					.on('l10nLoaded', () => {
 						assert.strictEqual(
 							provider.pluralize('en', 'TEST_VALUE_ONLY_RU', 5),
 							'ru-only form3',
@@ -306,24 +300,21 @@ describe('LocalizationProvider', function () {
 			});
 
 		it('should return string value if not array specified',
-			function (done) {
-				var config = {
-						l10n: {
-							defaultLocale: 'ru',
-							path: localizationPath
-						}
-					},
-					locator = createLocator(config),
-					eventBus = locator.resolve('eventBus');
-				locator.register(
-					'localizationLoader', LocalizationLoader, config
-				);
-				var provider = locator.resolveInstance(
-					LocalizationProvider, config
-				);
+			done => {
+				const config = {
+					l10n: {
+						defaultLocale: 'ru',
+						path: localizationPath
+					}
+				};
+				const locator = createLocator(config);
+				const eventBus = locator.resolve('eventBus');
+				locator.register('localizationLoader', LocalizationLoader);
+				const provider = new LocalizationProvider(locator);
+
 				eventBus
 					.on('error', done)
-					.on('l10nLoaded', function () {
+					.on('l10nLoaded', () => {
 						assert.strictEqual(
 							provider.pluralize('en', 'TEST_VALUE3', 5),
 							'en form1',
@@ -340,25 +331,21 @@ describe('LocalizationProvider', function () {
 			});
 
 		it('should return empty string if incorrect count of forms',
-			function (done) {
-				var config = {
-						l10n: {
-							defaultLocale: 'ru',
-							path: localizationPath
-						}
-					},
-					locator = createLocator(config),
-					eventBus = locator.resolve('eventBus');
-				locator.register(
-					'localizationLoader', LocalizationLoader, config
-				);
-				var provider = locator.resolveInstance(
-					LocalizationProvider, config
-				);
+			done => {
+				const config = {
+					l10n: {
+						defaultLocale: 'ru',
+						path: localizationPath
+					}
+				};
+				const locator = createLocator(config);
+				const eventBus = locator.resolve('eventBus');
+				locator.register('localizationLoader', LocalizationLoader);
+				const provider = new LocalizationProvider(locator);
 
 				eventBus
 					.on('error', done)
-					.on('l10nLoaded', function () {
+					.on('l10nLoaded', () => {
 						assert.strictEqual(
 							provider.pluralize('en', 'TEST_VALUE2', 5),
 							'',
@@ -376,27 +363,23 @@ describe('LocalizationProvider', function () {
 			});
 
 		it('should return key if incorrect count of forms and placeholders allowed',
-			function (done) {
-				var config = {
-						l10n: {
-							defaultLocale: 'ru',
-							path: localizationPath,
-							placeholder: true
-						}
-					},
-					locator = createLocator(config),
-					eventBus = locator.resolve('eventBus');
-				locator.register(
-					'localizationLoader', LocalizationLoader, config
-				);
-				var provider = locator.resolveInstance(
-					LocalizationProvider, config
-				);
+			done => {
+				const config = {
+					l10n: {
+						defaultLocale: 'ru',
+						path: localizationPath,
+						placeholder: true
+					}
+				};
+				const locator = createLocator(config);
+				const eventBus = locator.resolve('eventBus');
+				locator.register('localizationLoader', LocalizationLoader);
+				const provider = new LocalizationProvider(locator);
 
 				eventBus
 					.on('error', done)
-					.on('l10nLoaded', function () {
-						var key = 'TEST_VALUE2';
+					.on('l10nLoaded', () => {
+						const key = 'TEST_VALUE2';
 						assert.strictEqual(
 							provider.pluralize('en', key, 5),
 							key,
@@ -414,27 +397,23 @@ describe('LocalizationProvider', function () {
 			});
 
 		it('should return key if localization absent and placeholders allowed',
-			function (done) {
-				var config = {
-						l10n: {
-							defaultLocale: 'ru',
-							path: localizationPath,
-							placeholder: true
-						}
-					},
-					locator = createLocator(config),
-					eventBus = locator.resolve('eventBus');
-				locator.register(
-					'localizationLoader', LocalizationLoader, config
-				);
-				var provider = locator.resolveInstance(
-					LocalizationProvider, config
-				);
+			done => {
+				const config = {
+					l10n: {
+						defaultLocale: 'ru',
+						path: localizationPath,
+						placeholder: true
+					}
+				};
+				const locator = createLocator(config);
+				const eventBus = locator.resolve('eventBus');
+				locator.register('localizationLoader', LocalizationLoader);
+				const provider = new LocalizationProvider(locator);
 
 				eventBus
 					.on('error', done)
-					.on('l10nLoaded', function () {
-						var key = 'TEST_VALUE4';
+					.on('l10nLoaded', () => {
+						const key = 'TEST_VALUE4';
 						assert.strictEqual(
 							provider.pluralize('en', key, 5),
 							key,
@@ -453,19 +432,21 @@ describe('LocalizationProvider', function () {
 	});
 });
 
+/**
+ * Create ServiceLocator object
+ * @param {Object} config
+ * @returns {ServiceLocator}
+ */
 function createLocator(config) {
-	var locator = new ServiceLocator();
+	const locator = new ServiceLocator();
 	locator.registerInstance('config', config);
-	locator.registerInstance('serviceLocator', locator);
 	locator.registerInstance('eventBus', new events.EventEmitter());
-	var componentFinder = new events.EventEmitter();
-	componentFinder.find = function () {
-		return Promise.resolve({});
-	};
+	const componentFinder = new events.EventEmitter();
+	componentFinder.find = () => Promise.resolve({});
 	locator.registerInstance('componentFinder', componentFinder);
 	locator.register('logger', Logger);
-	locator.register('localizationLoader', LocalizationLoaderMock, config);
-	locator.register('localizationProvider', LocalizationProvider, config);
+	locator.registerInstance('localizationLoader', new LocalizationLoaderMock(config.localizations));
+	locator.register('localizationProvider', LocalizationProvider);
 
 	return locator;
 }

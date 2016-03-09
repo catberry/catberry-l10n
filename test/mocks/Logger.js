@@ -30,16 +30,12 @@
 
 'use strict';
 
+class Logger {
+	trace() { }
+	warn() { }
+	info() { }
+	error() { }
+	fatal() { }
+}
+
 module.exports = Logger;
-
-function Logger() { }
-
-Logger.prototype.trace = function () { };
-
-Logger.prototype.warn = function () { };
-
-Logger.prototype.info = function () { };
-
-Logger.prototype.error = function () { };
-
-Logger.prototype.fatal = function () { };
