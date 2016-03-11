@@ -6,7 +6,6 @@ const Promise = require('promise');
 const http = require('http');
 const path = require('path');
 const LocalizationLoader = require('../../lib/LocalizationLoader');
-const Logger = require('../mocks/Logger');
 const ServiceLocator = require('catberry-locator');
 
 const caseRoot = path.join(
@@ -646,7 +645,6 @@ describe('server/LocalizationLoader', () => {
 function createLocator(components) {
 	components = components || {};
 	const locator = new ServiceLocator();
-	locator.register('logger', Logger);
 	locator.registerInstance('serviceLocator', locator);
 	const componentFinder = new events.EventEmitter();
 	componentFinder.find = () => Promise.resolve(components);
