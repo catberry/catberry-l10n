@@ -1,7 +1,6 @@
 'use strict';
 
 const LocalizationLoaderMock = require('../mocks/LocalizationLoader');
-const Logger = require('../mocks/Logger');
 const LocalizationLoader = require('../../lib/LocalizationLoader');
 const LocalizationProvider = require('../../lib/LocalizationProvider');
 const assert = require('assert');
@@ -414,7 +413,6 @@ function createLocator(config) {
 	const componentFinder = new events.EventEmitter();
 	componentFinder.find = () => Promise.resolve({});
 	locator.registerInstance('componentFinder', componentFinder);
-	locator.register('logger', Logger);
 	locator.registerInstance('localizationLoader', new LocalizationLoaderMock(config.localizations));
 	locator.register('localizationProvider', LocalizationProvider);
 
