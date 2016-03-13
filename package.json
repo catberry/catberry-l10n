@@ -31,6 +31,9 @@
 		"url": "git://github.com/catberry/catberry-l10n.git"
 	},
 	"main": "./index.js",
+	"peerDependencies": {
+		"catberry": "^8.0.0"
+	},
 	"devDependencies": {
 		"promise": "^7.0.4",
 		"istanbul": "~0.4.2",
