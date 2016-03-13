@@ -1,87 +1,54 @@
-/*
- * catberry
- *
- * Copyright (c) 2014 Denis Rechkunov and project contributors.
- *
- * catberry's license follows:
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge,
- * publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * This license applies to all parts of catberry that are not externally
- * maintained libraries.
- */
-
 'use strict';
 
-var assert = require('assert'),
-	events = require('events'),
-	Promise = require('promise'),
-	http = require('http'),
-	path = require('path'),
-	LocalizationLoader = require('../../lib/LocalizationLoader'),
-	Logger = require('../mocks/Logger'),
-	ServiceLocator = require('catberry-locator');
+const assert = require('assert');
+const events = require('events');
+const Promise = require('promise');
+const http = require('http');
+const path = require('path');
+const LocalizationLoader = require('../../lib/LocalizationLoader');
+const ServiceLocator = require('catberry-locator');
 
-global.Promise = Promise;
-
-var caseRoot = path.join(
+const caseRoot = path.join(
 	__dirname, '..', 'cases', 'lib', 'server', 'LocalizationLoader'
 );
 
-var defaultLocale = 'ru',
-	components = {
-		component1: {
-			path: path.join(
-				caseRoot, 'components', 'component1', 'test-comp.json'
-			)
-		},
-		component2: {
-			path: path.join(
-				caseRoot, 'components', 'component2', 'test-comp.json'
-			)
-		},
-		// not exists
-		component3: {
-			path: path.join(
-				caseRoot, 'components', 'component3', 'test-comp.json'
-			)
-		},
-		// not a directory
-		component4: {
-			path: path.join(
-				caseRoot, 'components', 'component4', 'test-comp.json'
-			)
-		}
+const defaultLocale = 'ru';
+const components = {
+	component1: {
+		path: path.join(
+			caseRoot, 'components', 'component1', 'test-comp.json'
+		)
 	},
-	defaultConfig = {
-		l10n: {
-			defaultLocale: defaultLocale,
-			path: caseRoot
-		}
+	component2: {
+		path: path.join(
+			caseRoot, 'components', 'component2', 'test-comp.json'
+		)
 	},
-	localizations = {
-		en: require(path.join(defaultConfig.l10n.path, 'en')),
-		ru: require(path.join(defaultConfig.l10n.path, 'ru')),
-		'en-us': require(path.join(defaultConfig.l10n.path, 'en-us'))
+	// not exists
+	component3: {
+		path: path.join(
+			caseRoot, 'components', 'component3', 'test-comp.json'
+		)
 	},
-	defaultLocalization = localizations[defaultLocale];
+	// not a directory
+	component4: {
+		path: path.join(
+			caseRoot, 'components', 'component4', 'test-comp.json'
+		)
+	}
+};
+const defaultConfig = {
+	l10n: {
+		defaultLocale,
+		path: caseRoot
+	}
+};
+const localizations = {
+	en: require(path.join(defaultConfig.l10n.path, 'en')),
+	ru: require(path.join(defaultConfig.l10n.path, 'ru')),
+	'en-us': require(path.join(defaultConfig.l10n.path, 'en-us'))
+};
+const defaultLocalization = localizations[defaultLocale];
 
 localizations['en-us'].$pluralization = localizations.en.$pluralization = {
 	rule: '(n != 1)',
@@ -95,80 +62,86 @@ localizations.ru.$pluralization = {
 	'n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)'
 };
 
-describe('server/LocalizationLoader', function () {
-	describe('#constructor', function () {
+/* eslint max-nested-callbacks: [2, 7]*/
+
+describe('server/LocalizationLoader', () => {
+	describe('#constructor', () => {
 		it('should throw exception when default locale is not specified',
-			function () {
-				assert.throws(function () {
-					var locator = createLocator();
-					locator.resolveInstance(LocalizationLoader);
+			() => {
+				assert.throws(() => {
+					const locator = createLocator();
+					const localizationLoader = new LocalizationLoader(locator);
 				}, 'Error expected');
 			});
 
 		it('should throw exception when default locale is wrong',
-			function () {
-				assert.throws(function () {
-					var config = {
-							l10n: {
-								defaultLocale: 'china'
-							}
-						},
-						locator = createLocator(config);
-					locator.resolveInstance(LocalizationLoader, config);
+			() => {
+				assert.throws(() => {
+					const config = {
+						l10n: {
+							defaultLocale: 'china'
+						}
+					};
+					const locator = createLocator();
+					locator.registerInstance('config', config);
+					const localizationLoader = new LocalizationLoader(locator);
 				}, 'Error expected');
 			});
 
 		it('should throw exception when default localization can not be loaded',
-			function (done) {
-				var locator = createLocator(),
-					eventBus = locator.resolve('eventBus');
-				eventBus.on('error', function (error) {
-					assert.strictEqual(
-						error.message, 'Can not load default locale ch'
-					);
-					done();
-				});
-				locator.resolveInstance(LocalizationLoader, {
+			done => {
+				const locator = createLocator(components);
+				const eventBus = locator.resolve('eventBus');
+				const config = {
 					l10n: {
 						defaultLocale: 'ch'
 					}
-				});
+				};
+
+				locator.registerInstance('config', config);
+				const localizationLoader = new LocalizationLoader(locator);
+
+				eventBus
+					.on('error', error => {
+						assert.strictEqual(
+							error.message, 'Can not load default locale ch'
+						);
+						done();
+					});
+
 				eventBus.emit('allComponentsLoaded');
 			});
 
 		it('should not throw exception when default locale is specified',
-			function () {
-				assert.doesNotThrow(function () {
-					var locator = createLocator();
-					locator.resolveInstance(LocalizationLoader, defaultConfig);
+			() => {
+				assert.doesNotThrow(() => {
+					const locator = createLocator();
+					locator.registerInstance('config', defaultConfig);
+					const localizationLoader = new LocalizationLoader(locator);
 				});
 			});
 	});
 
-	describe('#load', function () {
-		it('should throw exception on wrong locale', function () {
-			var locator = createLocator(),
-				loader = locator.resolveInstance(
-					LocalizationLoader, defaultConfig
-				);
+	describe('#load', () => {
+		it('should throw exception on wrong locale', () => {
+			const locator = createLocator();
+			locator.registerInstance('config', defaultConfig);
+			const localizationLoader = new LocalizationLoader(locator);
 
-			assert.throws(function () {
-				loader.load('wrong');
-			}, 'Error expected');
+			assert.throws(() => loader.load('wrong'), 'Error expected');
 		});
 
 		it('should return default localization when argument is default locale',
-			function (done) {
-				var locator = createLocator(),
-					eventBus = locator.resolve('eventBus'),
-					loader = locator.resolveInstance(
-						LocalizationLoader, defaultConfig
-					);
+			done => {
+				const locator = createLocator();
+				const eventBus = locator.resolve('eventBus');
+				locator.registerInstance('config', defaultConfig);
+				const loader = new LocalizationLoader(locator);
 
 				eventBus
 					.on('error', done)
-					.on('l10nLoaded', function () {
-						var localization = loader.load(defaultLocale);
+					.on('l10nLoaded', () => {
+						const localization = loader.load(defaultLocale);
 						assert.deepEqual(
 							localization, localizations[defaultLocale],
 							'Localization do not match'
@@ -179,18 +152,17 @@ describe('server/LocalizationLoader', function () {
 			});
 
 		it('should return non-default localization merged with default',
-			function (done) {
-				var locator = createLocator(),
-					eventBus = locator.resolve('eventBus'),
-					loader = locator.resolveInstance(
-						LocalizationLoader, defaultConfig
-					);
+			done => {
+				const locator = createLocator();
+				const eventBus = locator.resolve('eventBus');
+				locator.registerInstance('config', defaultConfig);
+				const loader = new LocalizationLoader(locator);
 
 				eventBus
 					.on('error', done)
-					.on('l10nLoaded', function () {
-						var enLocalization = localizations.en,
-							localization = loader.load('en');
+					.on('l10nLoaded', () => {
+						const enLocalization = localizations.en;
+						const localization = loader.load('en');
 
 						assert.strictEqual(
 							localization.FIRST_VALUE,
@@ -213,18 +185,17 @@ describe('server/LocalizationLoader', function () {
 			});
 
 		it('should return localization merged with default using full name',
-			function (done) {
-				var locator = createLocator(),
-					eventBus = locator.resolve('eventBus'),
-					loader = locator.resolveInstance(
-						LocalizationLoader, defaultConfig
-					);
+			done => {
+				const locator = createLocator();
+				const eventBus = locator.resolve('eventBus');
+				locator.registerInstance('config', defaultConfig);
+				const loader = new LocalizationLoader(locator);
 
 				eventBus
 					.on('error', done)
-					.on('l10nLoaded', function () {
-						var enUsLocalization = localizations['en-us'],
-							localization = loader.load('en-us');
+					.on('l10nLoaded', () => {
+						const enUsLocalization = localizations['en-us'];
+						const localization = loader.load('en-us');
 
 						assert.strictEqual(
 							localization.FIRST_VALUE,
@@ -257,19 +228,18 @@ describe('server/LocalizationLoader', function () {
 			});
 
 		it('should return localization merged with components localization',
-			function (done) {
-				var locator = createLocator(components),
-					eventBus = locator.resolve('eventBus'),
-					loader = locator.resolveInstance(
-						LocalizationLoader, defaultConfig
-					);
+			done => {
+				const locator = createLocator(components);
+				const eventBus = locator.resolve('eventBus');
+				locator.registerInstance('config', defaultConfig);
+				const loader = new LocalizationLoader(locator);
 
 				eventBus
 					.on('error', done)
-					.on('l10nLoaded', function () {
-						var localization = loader.load('en-us');
+					.on('l10nLoaded', () => {
+						const localization = loader.load('en-us');
 
-						var expectedLocalization = {
+						const expectedLocalization = {
 							FIRST_VALUE: 'en-us locale first by module1',
 							SECOND_VALUE: 'en-us locale second',
 							THIRD_VALUE: 'ru locale third',
@@ -291,18 +261,17 @@ describe('server/LocalizationLoader', function () {
 		);
 
 		it('should return same localization on short or full name',
-			function (done) {
-				var locator = createLocator(components),
-					eventBus = locator.resolve('eventBus'),
-					loader = locator.resolveInstance(
-						LocalizationLoader, defaultConfig
-					);
+			done => {
+				const locator = createLocator(components);
+				const eventBus = locator.resolve('eventBus');
+				locator.registerInstance('config', defaultConfig);
+				const loader = new LocalizationLoader(locator);
 
 				eventBus
 					.on('error', done)
-					.on('l10nLoaded', function () {
-						var enLocalization = loader.load('en'),
-							enGbLocalization = loader.load('en-gb');
+					.on('l10nLoaded', () => {
+						const enLocalization = loader.load('en');
+						const enGbLocalization = loader.load('en-gb');
 
 						assert.deepEqual(enLocalization, enGbLocalization,
 							'Localization do not match'
@@ -313,23 +282,23 @@ describe('server/LocalizationLoader', function () {
 			});
 	});
 
-	describe('#getMiddleware', function () {
+	describe('#getMiddleware', () => {
 		it('should set browser locale if it is absent in cookie',
-			function (done) {
-				var locator = createLocator(),
-					loader = locator.resolveInstance(
-						LocalizationLoader, defaultConfig),
-					server = createServer(loader.getMiddleware());
+			done => {
+				const locator = createLocator();
+				locator.registerInstance('config', defaultConfig);
+				const loader = new LocalizationLoader(locator);
+				const server = createServer(loader.getMiddleware());
 
-				server.listen(8081, function () {
-					var request = http.request({
-							port: 8081,
-							agent: false,
-							headers: {
-								'Accept-Language': 'en-US,ru;q=0.8,en;q=0.4'
-							}
-						},
-						function (response) {
+				server.listen(8081, () => {
+					const request = http.request({
+						port: 8081,
+						agent: false,
+						headers: {
+							'Accept-Language': 'en-US,ru;q=0.8,en;q=0.4'
+						}
+					},
+						response => {
 							assert.strictEqual(response.statusCode, 200,
 								'Wrong status');
 
@@ -351,9 +320,7 @@ describe('server/LocalizationLoader', function () {
 								'Response cookie should have locale'
 							);
 
-							server.close(function () {
-								done();
-							});
+							server.close(() => done());
 						});
 
 					request.end();
@@ -361,33 +328,32 @@ describe('server/LocalizationLoader', function () {
 			});
 
 		it('should set browser locale with specified cookie parameters',
-			function (done) {
-				var locator = createLocator(),
-					config = Object.create(defaultConfig.l10n);
+			done => {
+				const locator = createLocator();
+				const config = Object.create(defaultConfig);
 
-				config.cookie = {
+				config.l10n.cookie = {
 					name: 'testName',
 					path: '/some/path',
 					domain: 'some.domain.org',
+					secure: true,
+					httpOnly: true,
 					maxAge: 500
 				};
-				var loader = locator.resolveInstance(
-						LocalizationLoader, {
-							l10n: config
-						}
-					),
-					server = createServer(loader.getMiddleware());
+				locator.registerInstance('config', config);
+				const loader = new LocalizationLoader(locator);
+				const server = createServer(loader.getMiddleware());
 
-				server.listen(8091, function () {
-					var expireDate = '',
-						request = http.request({
-							port: 8091,
-							agent: false,
-							headers: {
-								'Accept-Language': 'en-US,ru;q=0.8,en;q=0.4'
-							}
-						},
-						function (response) {
+				server.listen(8091, () => {
+					let expireDate = '';
+					const request = http.request({
+						port: 8091,
+						agent: false,
+						headers: {
+							'Accept-Language': 'en-US,ru;q=0.8,en;q=0.4'
+						}
+					},
+						response => {
 							assert.strictEqual(
 								response.statusCode, 200, 'Wrong status'
 							);
@@ -406,38 +372,37 @@ describe('server/LocalizationLoader', function () {
 
 							assert.strictEqual(
 								response.headers['set-cookie'][0],
-								'testName=en-us' +
-									'; Max-Age=' + config.cookie.maxAge +
-									'; Expires=' + expireDate.toUTCString() +
-									'; Path=' + config.cookie.path +
-									'; Domain=' + config.cookie.domain,
+								`testName=en-us\
+; Max-Age=${config.l10n.cookie.maxAge}\
+; Expires=${expireDate.toUTCString()}\
+; Path=${config.l10n.cookie.path}\
+; Domain=${config.l10n.cookie.domain}\
+; Secure; HttpOnly`,
 								'Response cookie should have locale'
 							);
 
-							server.close(function () {
-								done();
-							});
+							server.close(() => done());
 						});
 
 					expireDate = new Date((new Date()).getTime() +
-					config.cookie.maxAge * 1000);
+					config.l10n.cookie.maxAge * 1000);
 					request.end();
 				});
 			});
 
 		it('should set default locale if browser locale is absent',
-			function (done) {
-				var locator = createLocator(),
-					loader = locator.resolveInstance(
-						LocalizationLoader, defaultConfig),
-					server = createServer(loader.getMiddleware());
+			done => {
+				const locator = createLocator();
+				locator.registerInstance('config', defaultConfig);
+				const loader = new LocalizationLoader(locator);
+				const server = createServer(loader.getMiddleware());
 
-				server.listen(8082, function () {
-					var request = http.request({
-							port: 8082,
-							agent: false
-						},
-						function (response) {
+				server.listen(8082, () => {
+					const request = http.request({
+						port: 8082,
+						agent: false
+					},
+						response => {
 							assert.strictEqual(response.statusCode, 200,
 								'Wrong status');
 
@@ -453,15 +418,14 @@ describe('server/LocalizationLoader', function () {
 								'Response should have one cookie setup'
 							);
 
-							assert.strictEqual(/^locale=ru/
+							// TODO: refactoring, old value 'locale'
+							assert.strictEqual(/^testName=ru/
 									.test(response.headers['set-cookie'][0]),
 								true,
 								'Response cookie should have locale'
 							);
 
-							server.close(function () {
-								done();
-							});
+							server.close(() => done());
 						});
 
 					request.end();
@@ -469,21 +433,21 @@ describe('server/LocalizationLoader', function () {
 			});
 
 		it('should set default locale if wrong locale is used in cookies',
-			function (done) {
-				var locator = createLocator(),
-					loader = locator.resolveInstance(
-						LocalizationLoader, defaultConfig),
-					server = createServer(loader.getMiddleware());
+			done => {
+				const locator = createLocator();
+				locator.registerInstance('config', defaultConfig);
+				const loader = new LocalizationLoader(locator);
+				const server = createServer(loader.getMiddleware());
 
-				server.listen(8083, function () {
-					var request = http.request({
-							port: 8083,
-							agent: false,
-							headers: {
-								Cookie: 'locale=wrong'
-							}
-						},
-						function (response) {
+				server.listen(8083, () => {
+					const request = http.request({
+						port: 8083,
+						agent: false,
+						headers: {
+							Cookie: 'locale=wrong'
+						}
+					},
+						response => {
 							assert.strictEqual(response.statusCode, 200,
 								'Wrong status');
 
@@ -491,9 +455,7 @@ describe('server/LocalizationLoader', function () {
 								undefined,
 								'Response should not have cookies');
 
-							server.close(function () {
-								done();
-							});
+							server.close(() => done());
 						});
 
 					request.end();
@@ -501,16 +463,15 @@ describe('server/LocalizationLoader', function () {
 			});
 
 		it('should return localization file using cookie locale',
-			function (done) {
-				var locator = createLocator(),
-					eventBus = locator.resolve('eventBus'),
-					loader = locator.resolveInstance(
-						LocalizationLoader, defaultConfig
-					),
-					server = createServer(loader.getMiddleware());
+			done => {
+				const locator = createLocator();
+				const eventBus = locator.resolve('eventBus');
+				locator.registerInstance('config', defaultConfig);
+				const loader = new LocalizationLoader(locator);
+				const server = createServer(loader.getMiddleware());
 
-				var enUsLocalization = localizations['en-us'],
-					mergedLocalization = {};
+				const enUsLocalization = localizations['en-us'];
+				const mergedLocalization = {};
 				mergedLocalization.FIRST_VALUE =
 					enUsLocalization.FIRST_VALUE;
 				mergedLocalization.SECOND_VALUE =
@@ -526,59 +487,55 @@ describe('server/LocalizationLoader', function () {
 
 				eventBus
 					.on('error', done)
-					.on('l10nLoaded', function () {
-						var request = http.request({
-								port: 8084,
-								agent: false,
-								path: '/l10n.js',
-								headers: {
-									Cookie: 'locale=en-us'
-								}
-							},
-							function (response) {
+					.on('l10nLoaded', () => {
+						const request = http.request({
+							port: 8084,
+							agent: false,
+							path: '/l10n.js',
+							headers: {
+								Cookie: 'locale=en-us'
+							}
+						},
+							response => {
 								assert.strictEqual(
 									response.statusCode, 200, 'Wrong status'
 								);
 
-								var data = '';
+								let data = '';
 
 								response.setEncoding('utf8');
 								response
-									.on('data', function (chunk) {
+									.on('data', chunk => {
 										data += chunk;
 									})
-									.on('end', function () {
-										var window = {};
-										/*jshint evil:true */
+									.on('end', () => {
+
+										/* eslint no-eval: 0*/
+										const window = {};
 										eval(data);
 										assert.deepEqual(
 											window.localization,
 											mergedLocalization,
 											'Localization do not match'
 										);
-										server.close(function () {
-											done();
-										});
+										server.close(() => done());
 									});
 							});
 						request.end();
 					});
-				server.listen(8084, function () {
-					eventBus.emit('allComponentsLoaded');
-				});
+				server.listen(8084, () => eventBus.emit('allComponentsLoaded'));
 			});
 
 		it('should return localization file using cookie short locale',
-			function (done) {
-				var locator = createLocator(),
-					eventBus = locator.resolve('eventBus'),
-					loader = locator.resolveInstance(
-						LocalizationLoader, defaultConfig
-					),
-					server = createServer(loader.getMiddleware());
+			done => {
+				const locator = createLocator();
+				const eventBus = locator.resolve('eventBus');
+				locator.registerInstance('config', defaultConfig);
+				const loader = new LocalizationLoader(locator);
+				const server = createServer(loader.getMiddleware());
 
-				var enLocalization = localizations.en,
-					mergedLocalization = {};
+				const enLocalization = localizations.en;
+				const mergedLocalization = {};
 				mergedLocalization.FIRST_VALUE =
 					enLocalization.FIRST_VALUE;
 				mergedLocalization.SECOND_VALUE =
@@ -590,123 +547,124 @@ describe('server/LocalizationLoader', function () {
 
 				eventBus
 					.on('error', done)
-					.on('l10nLoaded', function () {
-						var request = http.request({
-								port: 8085,
-								agent: false,
-								path: '/l10n.js',
-								headers: {
-									Cookie: 'locale=en-au'
-								}
-							},
-							function (response) {
+					.on('l10nLoaded', () => {
+						const request = http.request({
+							port: 8085,
+							agent: false,
+							path: '/l10n.js',
+							headers: {
+								Cookie: 'locale=en-au'
+							}
+						},
+							response => {
 								assert.strictEqual(
 									response.statusCode, 200, 'Wrong status'
 								);
 
-								var data = '';
+								let data = '';
 
 								response.setEncoding('utf8');
 								response
-									.on('data', function (chunk) {
+									.on('data', chunk => {
 										data += chunk;
 									})
-									.on('end', function () {
-										var window = {};
-										/*jshint evil:true */
+									.on('end', () => {
+
+										/* eslint no-eval: 0*/
+										const window = {};
 										eval(data);
 										assert.deepEqual(
 											window.localization,
 											mergedLocalization,
 											'Localization do not match'
 										);
-										server.close(function () {
-											done();
-										});
+										server.close(() => done());
 									});
 							});
 						request.end();
 					});
-				server.listen(8085, function () {
-					eventBus.emit('allComponentsLoaded');
-				});
+				server.listen(8085, () => eventBus.emit('allComponentsLoaded'));
 			});
 
 		it('should return default localization file using cookie wrong locale',
-			function (done) {
-				var locator = createLocator(),
-					eventBus = locator.resolve('eventBus'),
-					loader = locator.resolveInstance(
-						LocalizationLoader, defaultConfig
-					),
-					server = createServer(loader.getMiddleware());
+			done => {
+				const locator = createLocator();
+				const eventBus = locator.resolve('eventBus');
+				locator.registerInstance('config', defaultConfig);
+				const loader = new LocalizationLoader(locator);
+				const server = createServer(loader.getMiddleware());
 
 				eventBus
 					.on('error', done)
-					.on('l10nLoaded', function () {
-						var request = http.request({
-								port: 8086,
-								agent: false,
-								path: '/l10n.js',
-								headers: {
-									Cookie: 'locale=ch'
-								}
-							},
-							function (response) {
+					.on('l10nLoaded', () => {
+						const request = http.request({
+							port: 8086,
+							agent: false,
+							path: '/l10n.js',
+							headers: {
+								Cookie: 'locale=ch'
+							}
+						},
+							response => {
 								assert.strictEqual(
 									response.statusCode, 200, 'Wrong status'
 								);
 
-								var data = '';
+								let data = '';
 
 								response.setEncoding('utf8');
 								response
-									.on('data', function (chunk) {
+									.on('data', chunk => {
 										data += chunk;
 									})
-									.on('end', function () {
-										var window = {};
-										/*jshint evil:true */
+									.on('end', () => {
+
+										/* eslint no-eval: 0*/
+										const window = {};
 										eval(data);
 										assert.deepEqual(
 											window.localization,
 											defaultLocalization,
 											'Localization do not match'
 										);
-										server.close(function () {
-											done();
-										});
+										server.close(() => done());
 									});
 							});
 						request.end();
 					});
-				server.listen(8086, function () {
-					eventBus.emit('allComponentsLoaded');
-				});
+				server.listen(8086, () => eventBus.emit('allComponentsLoaded'));
 			});
 	});
 });
 
+/**
+ * Create ServiceLocator object
+ * @param components
+ * @returns {ServiceLocator}
+ */
 function createLocator(components) {
 	components = components || {};
-	var locator = new ServiceLocator();
-	locator.register('logger', Logger);
+	const locator = new ServiceLocator();
 	locator.registerInstance('serviceLocator', locator);
-	var componentFinder = new events.EventEmitter();
-	componentFinder.find = function () {
-		return Promise.resolve(components);
-	};
+	const componentFinder = new events.EventEmitter();
+	componentFinder.find = () => Promise.resolve(components);
 	locator.registerInstance('componentFinder', componentFinder);
 	locator.registerInstance('eventBus', new events.EventEmitter());
 	return locator;
 }
 
+/**
+ * Create server
+ * @param middleware
+ * @param endCallback
+ * @returns {*}
+ */
 function createServer(middleware, endCallback) {
-	endCallback = endCallback || function () {};
-	return http.createServer(function (request, response) {
-		middleware(request, response, function () {
+	endCallback = endCallback || function() {};
+	return http.createServer(
+		(request, response) => middleware(request, response, () => {
 			response.end();
 			endCallback(request, response);
-		});
-	});
+		})
+	);
 }
