@@ -4,6 +4,12 @@
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/catberry/main?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
 [![codecov.io](http://codecov.io/github/catberry/catberry-l10n/coverage.svg?branch=master)](http://codecov.io/github/catberry/catberry-l10n?branch=master)
 
+## Installation
+
+```bash
+npm install catberry-l10n --save
+```
+
 ## Description
 This plugin adds localization support for [Cat-components](https://github.com/catberry/catberry/blob/4.0.0/docs/index.md#cat-components).
 
