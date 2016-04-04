@@ -2,7 +2,6 @@
 
 const assert = require('assert');
 const events = require('events');
-const Promise = require('promise');
 const http = require('http');
 const path = require('path');
 const LocalizationLoader = require('../../lib/LocalizationLoader');
