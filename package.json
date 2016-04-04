@@ -35,12 +35,11 @@
 		"catberry": "^8.0.0"
 	},
 	"devDependencies": {
-		"promise": "^7.0.4",
 		"istanbul": "~0.4.2",
 		"codecov": "^1.0.1",
 		"catberry-locator": "^2.1.0",
 		"mocha": "^2.4.5",
-		"eslint": "^2.2.0"
+		"eslint": "^2.6.0"
 	},
 	"browser": {
 		"./lib/LocalizationLoader.js": "./browser/LocalizationLoader.js"
