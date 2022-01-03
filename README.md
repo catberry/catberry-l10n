@@ -197,4 +197,4 @@ There are a lot of ways to contribute:
 * [Submit a bug or a feature request](https://github.com/catberry/catberry-l10n/issues)
 * [Submit a PR](https://github.com/catberry/catberry-l10n/blob/develop/CONTRIBUTING.md)
 
-Denis Rechkunov <denis.rechkunov@gmail.com>
+Denis Rechkunov <denis@rdner.de>
